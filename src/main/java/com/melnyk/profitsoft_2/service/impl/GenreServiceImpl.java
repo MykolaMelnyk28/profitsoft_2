@@ -1,14 +1,124 @@
 package com.melnyk.profitsoft_2.service.impl;
 
+import com.melnyk.profitsoft_2.dto.request.GenreFilter;
+import com.melnyk.profitsoft_2.dto.request.GenreRequestDto;
+import com.melnyk.profitsoft_2.dto.response.GenreDto;
+import com.melnyk.profitsoft_2.entity.Genre;
+import com.melnyk.profitsoft_2.exception.ResourceAlreadyExistsException;
+import com.melnyk.profitsoft_2.exception.ResourceNotFoundException;
+import com.melnyk.profitsoft_2.mapper.GenreMapper;
 import com.melnyk.profitsoft_2.repository.GenreRepository;
 import com.melnyk.profitsoft_2.service.GenreService;
+import com.melnyk.profitsoft_2.util.SpecificationFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class GenreServiceImpl implements GenreService {
 
     private final GenreRepository genreRepository;
+    private final GenreMapper genreMapper;
+    private final TransactionTemplate transactionTemplate;
+
+    @Override
+    public GenreDto create(GenreRequestDto body) throws ResourceAlreadyExistsException {
+        log.info("Creating genre {}", body);
+
+        Genre created = transactionTemplate.execute(status -> createGenre(body));
+
+        log.info("Genre created id={}", created.getId());
+        return genreMapper.toDto(created);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public GenreDto getById(Long id) throws ResourceNotFoundException {
+        log.info("Getting genre id={}", id);
+        GenreDto genreDto = genreMapper.toDto(getByIdOrThrow(id));
+        log.info("Genre found id={}", id);
+        return genreDto;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<GenreDto> search(GenreFilter filter) {
+        log.info("Searching genres by filter {}", filter);
+        Specification<Genre> spec = SpecificationFactory.create(filter);
+        List<GenreDto> genres = genreRepository.findAll(spec).stream()
+            .map(genreMapper::toDto)
+            .toList();
+        log.info("Searched {} genres", genres.size());
+        return genres;
+    }
+
+    @Override
+    public GenreDto updateById(Long id, GenreRequestDto body)
+        throws ResourceNotFoundException, ResourceAlreadyExistsException {
+        log.info("Updating genre id={}", id);
+
+        Genre updated = transactionTemplate.execute(status -> update(id, body));
+
+        log.info("Updated genre id={}", id);
+        return genreMapper.toDto(updated);
+    }
+
+    @Transactional
+    @Override
+    public void deleteById(Long id) throws ResourceNotFoundException {
+        log.info("Deleting genre id={}", id);
+        getByIdOrThrow(id);
+        genreRepository.deleteById(id);
+        log.info("Deleted genre id={}", id);
+    }
+
+    @Transactional(readOnly = true)
+    Genre getByIdOrThrow(Long id) throws ResourceNotFoundException {
+        return genreRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Genre %d not found".formatted(id), id));
+    }
+
+    private Genre createGenre(GenreRequestDto body) {
+        checkNotExistsNameOrThrow(body.name());
+        Genre genre = genreMapper.toEntity(body);
+        return genreRepository.save(genre);
+    }
+
+    private Genre update(Long id, GenreRequestDto body) {
+        Genre found = getByIdOrThrow(id);
+
+        boolean isUpdated = false;
+
+        if (body.name() != null && !body.name().equals(found.getName())) {
+            checkNotExistsNameOrThrow(body.name());
+            found.setName(body.name());
+            isUpdated = true;
+        }
+
+        if (isUpdated) {
+            return genreRepository.save(found);
+        }
+        return found;
+    }
+
+    @Transactional(readOnly = true)
+    private void checkNotExistsNameOrThrow(String name) throws ResourceAlreadyExistsException {
+        if (name == null) return;
+        Optional<Genre> opt = genreRepository.findByName(name);
+        if (opt.isPresent()) {
+            Genre genre = opt.get();
+            throw new ResourceAlreadyExistsException(
+                "Genre name '%s' already exists".formatted(name),
+                genre.getId(), name);
+        }
+    }
 
 }
