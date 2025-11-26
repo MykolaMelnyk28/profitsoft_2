@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create_table-authors
+      author: Mykola Melnyk
+      changes:
+        - createTable:
+            tableName: authors
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+        - addDefaultValue:
+            tableName: authors
+            columnName: id
+            defaultValueSequenceNext: authors_id_seq

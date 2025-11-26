@@ -1,0 +1,55 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006-create_table-books
+      author: Mykola Melnyk
+      changes:
+        - createTable:
+            tableName: books
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: author_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: year_published
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: pages
+                  type: INT
+                  constraints:
+                    nullable: false
+        - addDefaultValue:
+            tableName: books
+            columnName: id
+            defaultValueSequenceNext: books_id_seq
+        - addUniqueConstraint:
+            constraintName: uq_books_title_author_id
+            tableName: books
+            columnNames: 'title,author_id'
+        - addForeignKeyConstraint:
+            constraintName: fk_books_author_id
+            baseTableName: books
+            baseColumnNames: author_id
+            referencedTableName: authors
+            referencedColumnNames: id
+            onDelete: 'CASCADE'
+            onUpdate: 'NO ACTION'

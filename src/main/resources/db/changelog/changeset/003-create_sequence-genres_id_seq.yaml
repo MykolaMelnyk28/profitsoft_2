@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-create_sequence-genres_id_seq
+      author: Mykola Melnyk
+      changes:
+        - createSequence:
+            sequenceName: genres_id_seq
+            startValue: 1
+            incrementBy: 1

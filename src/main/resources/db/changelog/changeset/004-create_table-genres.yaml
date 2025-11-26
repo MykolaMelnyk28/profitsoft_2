@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-create_table-genres
+      author: Mykola Melnyk
+      changes:
+        - createTable:
+            tableName: genres
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+        - addDefaultValue:
+            tableName: genres
+            columnName: id
+            defaultValueSequenceNext: genres_id_seq
+        - addUniqueConstraint:
+            tableName: genres
+            constraintName: uq_genres_name
+            columnNames: name

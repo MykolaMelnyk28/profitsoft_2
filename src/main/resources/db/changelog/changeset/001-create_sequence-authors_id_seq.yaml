@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create_sequence-authors_id_seq
+      author: Mykola Melnyk
+      changes:
+        - createSequence:
+            sequenceName: authors_id_seq
+            startValue: 1
+            incrementBy: 1
