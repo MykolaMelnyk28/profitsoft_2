@@ -7,9 +7,10 @@ import java.net.URI;
 public final class URIUtil {
     private URIUtil() {}
 
-    public static URI createLocationUri(UriComponentsBuilder uriBuilder, Long id) {
+    public static URI createLocationUri(UriComponentsBuilder uriBuilder, String resourcePath, Long id) {
         return uriBuilder
-            .path("/api/genres/{id}")
+            .path(resourcePath)
+            .path("/{id}")
             .build(id);
     }
 

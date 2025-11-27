@@ -41,7 +41,7 @@ public class GenreController {
     ) {
         log.info("POST /api/genres body={}", body);
         GenreDto created = genreService.create(body);
-        URI uri = URIUtil.createLocationUri(uriBuilder, created.getId());
+        URI uri = URIUtil.createLocationUri(uriBuilder, "/api/genres", created.getId());
         return ResponseEntity.created(uri).body(created);
     }
 
