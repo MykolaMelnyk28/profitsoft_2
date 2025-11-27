@@ -7,3 +7,9 @@ spring:
   profiles:
     active:
       - dev
+
+pagination:
+  default:
+    page: 0
+    size: 10
+    sort: 'id, asc'
