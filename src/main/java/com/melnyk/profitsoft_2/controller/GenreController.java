@@ -2,6 +2,7 @@ package com.melnyk.profitsoft_2.controller;
 
 import com.melnyk.profitsoft_2.dto.request.GenreFilter;
 import com.melnyk.profitsoft_2.dto.request.GenreRequestDto;
+import com.melnyk.profitsoft_2.dto.response.PageDto;
 import com.melnyk.profitsoft_2.dto.response.GenreDto;
 import com.melnyk.profitsoft_2.service.GenreService;
 import com.melnyk.profitsoft_2.util.URIUtil;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/genres")
@@ -45,11 +45,11 @@ public class GenreController {
     }
 
     @PostMapping("/_list")
-    public ResponseEntity<List<GenreDto>> searchGenres(
+    public ResponseEntity<PageDto<GenreDto>> searchGenres(
         @RequestBody GenreFilter filter
     ) {
         log.info("POST /api/genres/_list body={}", filter);
-        List<GenreDto> genres = genreService.search(filter);
+        PageDto<GenreDto> genres = genreService.search(filter);
         return ResponseEntity.ok(genres);
     }
 

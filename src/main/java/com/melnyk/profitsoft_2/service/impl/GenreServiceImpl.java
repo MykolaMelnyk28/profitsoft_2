@@ -1,7 +1,9 @@
 package com.melnyk.profitsoft_2.service.impl;
 
+import com.melnyk.profitsoft_2.config.props.PaginationProps;
 import com.melnyk.profitsoft_2.dto.request.GenreFilter;
 import com.melnyk.profitsoft_2.dto.request.GenreRequestDto;
+import com.melnyk.profitsoft_2.dto.response.PageDto;
 import com.melnyk.profitsoft_2.dto.response.GenreDto;
 import com.melnyk.profitsoft_2.entity.Genre;
 import com.melnyk.profitsoft_2.exception.ResourceAlreadyExistsException;
@@ -9,15 +11,17 @@ import com.melnyk.profitsoft_2.exception.ResourceNotFoundException;
 import com.melnyk.profitsoft_2.mapper.GenreMapper;
 import com.melnyk.profitsoft_2.repository.GenreRepository;
 import com.melnyk.profitsoft_2.service.GenreService;
+import com.melnyk.profitsoft_2.util.PageUtil;
 import com.melnyk.profitsoft_2.util.SpecificationFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -28,6 +32,7 @@ public class GenreServiceImpl implements GenreService {
     private final GenreRepository genreRepository;
     private final GenreMapper genreMapper;
     private final TransactionTemplate transactionTemplate;
+    private final PaginationProps paginationProps;
 
     @Override
     public GenreDto create(GenreRequestDto body) throws ResourceAlreadyExistsException {
@@ -50,14 +55,13 @@ public class GenreServiceImpl implements GenreService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<GenreDto> search(GenreFilter filter) {
+    public PageDto<GenreDto> search(GenreFilter filter) {
         log.info("Searching genres by filter {}", filter);
+        Pageable pageable = PageUtil.pageableFrom(filter, paginationProps);
         Specification<Genre> spec = SpecificationFactory.create(filter);
-        List<GenreDto> genres = genreRepository.findAll(spec).stream()
-            .map(genreMapper::toDto)
-            .toList();
-        log.info("Searched {} genres", genres.size());
-        return genres;
+        Page<Genre> genres = genreRepository.findAll(spec, pageable);
+        log.info("{}", genres);
+        return new PageDto<>(genres.map(genreMapper::toDto));
     }
 
     @Override
