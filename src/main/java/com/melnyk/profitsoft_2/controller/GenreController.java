@@ -7,6 +7,7 @@ import com.melnyk.profitsoft_2.dto.response.GenreDto;
 import com.melnyk.profitsoft_2.service.GenreService;
 import com.melnyk.profitsoft_2.util.URIUtil;
 import com.melnyk.profitsoft_2.validaton.Groups;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +36,7 @@ public class GenreController {
 
     @PostMapping
     public ResponseEntity<GenreDto> createGenre(
-        @RequestBody @Validated(Groups.OnUpdate.class)  GenreRequestDto body,
+        @RequestBody @Validated(Groups.OnCreate.class) GenreRequestDto body,
         UriComponentsBuilder uriBuilder
     ) {
         log.info("POST /api/genres body={}", body);
@@ -46,7 +47,7 @@ public class GenreController {
 
     @PostMapping("/_list")
     public ResponseEntity<PageDto<GenreDto>> searchGenres(
-        @RequestBody GenreFilter filter
+        @RequestBody @Valid GenreFilter filter
     ) {
         log.info("POST /api/genres/_list body={}", filter);
         PageDto<GenreDto> genres = genreService.search(filter);

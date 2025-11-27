@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record GenreRequestDto(
-    @NotNull(message = "name is required", groups =  Groups.OnCreate.class)
-    @NotBlank(message = "name is required", groups = Groups.OnCreate.class)
+    @NotNull(message = "name is required", groups =  {Groups.OnCreate.class, Groups.OnUpdate.class})
+    @NotBlank(message = "name is required", groups = {Groups.OnCreate.class, Groups.OnUpdate.class})
     String name
 ) { }
