@@ -44,11 +44,11 @@ public final class SpecificationFactory {
             final List<Predicate> predicates = new ArrayList<>();
 
             if (filter.firstName() != null) {
-                predicates.add(useLikeIgnoreCase(root, cb, "first_name", "%" + filter.firstName() + "%"));
+                predicates.add(useLikeIgnoreCase(root, cb, "firstName", "%" + filter.firstName() + "%"));
             }
 
             if (filter.lastName() != null) {
-                predicates.add(useLikeIgnoreCase(root, cb, "last_name", "%" + filter.lastName() + "%"));
+                predicates.add(useLikeIgnoreCase(root, cb, "lastName", "%" + filter.lastName() + "%"));
             }
 
             predicates.addAll(useCreationFilter(root, cb, filter));
