@@ -2,7 +2,9 @@ package com.melnyk.profitsoft_2.util;
 
 import com.melnyk.profitsoft_2.dto.request.filter.CreationFilter;
 import com.melnyk.profitsoft_2.dto.request.filter.UpdatedFilter;
+import com.melnyk.profitsoft_2.dto.request.filter.impl.AuthorFilter;
 import com.melnyk.profitsoft_2.dto.request.filter.impl.GenreFilter;
+import com.melnyk.profitsoft_2.entity.Author;
 import com.melnyk.profitsoft_2.entity.Genre;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
@@ -25,6 +27,28 @@ public final class SpecificationFactory {
 
             if (filter.name() != null) {
                 predicates.add(useLikeIgnoreCase(root, cb, "name", "%" + filter.name() + "%"));
+            }
+
+            predicates.addAll(useCreationFilter(root, cb, filter));
+            predicates.addAll(useUpdatedFilter(root, cb, filter));
+
+            return cb.and(predicates.toArray(Predicate[]::new));
+        };
+    }
+
+    public static Specification<Author> createForAuthor(AuthorFilter filter) {
+        return (root, query, cb) -> {
+            if (filter == null) {
+                return null;
+            }
+            final List<Predicate> predicates = new ArrayList<>();
+
+            if (filter.firstName() != null) {
+                predicates.add(useLikeIgnoreCase(root, cb, "first_name", "%" + filter.firstName() + "%"));
+            }
+
+            if (filter.lastName() != null) {
+                predicates.add(useLikeIgnoreCase(root, cb, "last_name", "%" + filter.lastName() + "%"));
             }
 
             predicates.addAll(useCreationFilter(root, cb, filter));

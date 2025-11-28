@@ -13,6 +13,8 @@ public interface GenreMapper {
     GenreDto toDto(Genre genre);
 
     @Mappings({
+        @Mapping(target = "id", ignore = true),
+        @Mapping(target = "books", ignore = true),
         @Mapping(target = "createdAt", ignore = true),
         @Mapping(target = "updatedAt", ignore = true)
     })
