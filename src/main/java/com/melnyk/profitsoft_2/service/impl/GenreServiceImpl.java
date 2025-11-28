@@ -1,7 +1,7 @@
 package com.melnyk.profitsoft_2.service.impl;
 
 import com.melnyk.profitsoft_2.config.props.PaginationProps;
-import com.melnyk.profitsoft_2.dto.request.GenreFilter;
+import com.melnyk.profitsoft_2.dto.request.filter.impl.GenreFilter;
 import com.melnyk.profitsoft_2.dto.request.GenreRequestDto;
 import com.melnyk.profitsoft_2.dto.response.PageDto;
 import com.melnyk.profitsoft_2.dto.response.GenreDto;
@@ -58,7 +58,7 @@ public class GenreServiceImpl implements GenreService {
     public PageDto<GenreDto> search(GenreFilter filter) {
         log.info("Searching genres by filter {}", filter);
         Pageable pageable = PageUtil.pageableFrom(filter, paginationProps);
-        Specification<Genre> spec = SpecificationFactory.create(filter);
+        Specification<Genre> spec = SpecificationFactory.createForGenre(filter);
         Page<Genre> genres = genreRepository.findAll(spec, pageable);
         log.info("{}", genres);
         return new PageDto<>(genres.map(genreMapper::toDto));
@@ -87,7 +87,7 @@ public class GenreServiceImpl implements GenreService {
     @Transactional(readOnly = true)
     Genre getByIdOrThrow(Long id) throws ResourceNotFoundException {
         return genreRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Genre %d not found".formatted(id), id));
+            .orElseThrow(() -> new ResourceNotFoundException("%d not found".formatted(id), id, "Genre"));
     }
 
     private Genre createGenre(GenreRequestDto body) {
@@ -120,8 +120,8 @@ public class GenreServiceImpl implements GenreService {
         if (opt.isPresent()) {
             Genre genre = opt.get();
             throw new ResourceAlreadyExistsException(
-                "Genre name '%s' already exists".formatted(name),
-                genre.getId(), name);
+                "Name already exists",
+                genre.getId(), "Genre", name);
         }
     }
 

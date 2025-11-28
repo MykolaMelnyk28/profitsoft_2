@@ -1,6 +1,6 @@
 package com.melnyk.profitsoft_2.controller;
 
-import com.melnyk.profitsoft_2.dto.request.GenreFilter;
+import com.melnyk.profitsoft_2.dto.request.filter.impl.GenreFilter;
 import com.melnyk.profitsoft_2.dto.request.GenreRequestDto;
 import com.melnyk.profitsoft_2.dto.response.PageDto;
 import com.melnyk.profitsoft_2.dto.response.GenreDto;

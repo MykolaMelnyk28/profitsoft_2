@@ -1,9 +1,9 @@
 package com.melnyk.profitsoft_2.service.impl;
 
 import com.melnyk.profitsoft_2.config.props.PaginationProps;
-import com.melnyk.profitsoft_2.dto.request.GenreFilter;
+import com.melnyk.profitsoft_2.dto.request.filter.impl.GenreFilter;
 import com.melnyk.profitsoft_2.dto.request.GenreRequestDto;
-import com.melnyk.profitsoft_2.dto.request.PageFilter;
+import com.melnyk.profitsoft_2.dto.request.filter.PageFilter;
 import com.melnyk.profitsoft_2.dto.response.GenreDto;
 import com.melnyk.profitsoft_2.dto.response.PageDto;
 import com.melnyk.profitsoft_2.entity.Genre;
@@ -131,7 +131,7 @@ class GenreServiceImplTest {
     @Test
     void search_whenFilterIsValid_thenReturnsPagedResult() {
         Pageable pageable = PageRequest.of(0, 10);
-        GenreFilter filter = new GenreFilter(null, 0, 10, null);
+        GenreFilter filter = new GenreFilter(null, 0, 10, null, null, null, null, null);
         Genre entity = Genre.builder()
             .id(1L)
             .name("Sci-Fi")

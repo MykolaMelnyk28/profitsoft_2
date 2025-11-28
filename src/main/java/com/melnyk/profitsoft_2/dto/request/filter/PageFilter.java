@@ -1,4 +1,4 @@
-package com.melnyk.profitsoft_2.dto.request;
+package com.melnyk.profitsoft_2.dto.request.filter;
 
 public interface PageFilter {
 

@@ -1,10 +1,12 @@
 package com.melnyk.profitsoft_2.util;
 
-import com.melnyk.profitsoft_2.dto.request.GenreFilter;
+import com.melnyk.profitsoft_2.dto.request.filter.impl.GenreFilter;
 import com.melnyk.profitsoft_2.entity.Genre;
 import jakarta.persistence.criteria.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.jpa.domain.Specification;
+
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -13,35 +15,134 @@ import static org.mockito.Mockito.*;
 class SpecificationFactoryTest {
 
     @Test
-    void create_withNullFilter_returnsNull() {
-        Specification<Genre> spec = SpecificationFactory.create(null);
+    void createGenre_withNullFilter_returnsNull() {
+        Specification<Genre> spec = SpecificationFactory.createForGenre(null);
         assertThat(spec.toPredicate(null, null, null)).isNull();
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    void create_withNameFilter_returnsPredicate() {
-        GenreFilter filter = new GenreFilter("Drama", null, null, null);
+    void createForGenre_withNameFilter_returnsPredicate() {
+        GenreFilter filter = new GenreFilter("Drama", null, null, null, null, null, null, null);
 
         Root<Genre> root = (Root<Genre>) mock(Root.class);
         CriteriaQuery<?> query = mock(CriteriaQuery.class);
         CriteriaBuilder cb = mock(CriteriaBuilder.class);
+
+        Predicate expected = mockStringLikePredicate(
+            root, cb, "name", "%drama%"
+        );
+
+        Specification<Genre> spec = SpecificationFactory.createForGenre(filter);
+        Predicate result = spec.toPredicate(root, query, cb);
+
+        assertThat(result).isEqualTo(expected);
+    }
+
+    @Test
+    void createForGenre_withStartCreatedAt_returnsPredicate() {
+        LocalDateTime time = LocalDateTime.now();
+        GenreFilter filter = new GenreFilter(null, null, null, null, time, null, null, null);
+
+        Specification<Genre> spec = SpecificationFactory.createForGenre(filter);
+        Root<Genre> root = mock(Root.class);
+        CriteriaQuery<?> query = mock(CriteriaQuery.class);
+        CriteriaBuilder cb = mock(CriteriaBuilder.class);
+
+        assertDatePredicate(spec, root, query, cb, "createdAt", time, true);
+    }
+
+    @Test
+    void createForGenre_withEndCreatedAt_returnsPredicate() {
+        LocalDateTime time = LocalDateTime.now();
+        GenreFilter filter = new GenreFilter(null, null, null, null, null, time, null, null);
+
+        Specification<Genre> spec = SpecificationFactory.createForGenre(filter);
+        Root<Genre> root = mock(Root.class);
+        CriteriaQuery<?> query = mock(CriteriaQuery.class);
+        CriteriaBuilder cb = mock(CriteriaBuilder.class);
+
+        assertDatePredicate(spec, root, query, cb, "createdAt", time, false);
+    }
+
+    @Test
+    void createForGenre_withStartUpdatedAt_returnsPredicate() {
+        LocalDateTime time = LocalDateTime.now();
+        GenreFilter filter = new GenreFilter(null, null, null, null, null, null, time, null);
+
+        Specification<Genre> spec = SpecificationFactory.createForGenre(filter);
+        Root<Genre> root = mock(Root.class);
+        CriteriaQuery<?> query = mock(CriteriaQuery.class);
+        CriteriaBuilder cb = mock(CriteriaBuilder.class);
+
+        assertDatePredicate(spec, root, query, cb, "updatedAt", time, true);
+    }
+
+    @Test
+    void createForGenre_withEndUpdatedAt_returnsPredicate() {
+        LocalDateTime time = LocalDateTime.now();
+        GenreFilter filter = new GenreFilter(null, null, null, null, null, null, null, time);
+
+        Specification<Genre> spec = SpecificationFactory.createForGenre(filter);
+        Root<Genre> root = mock(Root.class);
+        CriteriaQuery<?> query = mock(CriteriaQuery.class);
+        CriteriaBuilder cb = mock(CriteriaBuilder.class);
+
+        assertDatePredicate(spec, root, query, cb, "updatedAt", time, false);
+    }
+
+    @SuppressWarnings("unchecked")
+    Predicate mockStringLikePredicate(
+        Root<?> root,
+        CriteriaBuilder cb,
+        String field,
+        String likeExpression
+    ) {
         Path<String> path = (Path<String>) mock(Path.class);
         Predicate predicate = mock(Predicate.class);
 
-        when(root.<String>get("name")).thenReturn(path);
+        when(root.<String>get(field)).thenReturn(path);
         when(cb.lower(path)).thenReturn(path);
-        when(cb.like(path, "%drama%")).thenReturn(predicate);
+        when(cb.like(path, likeExpression)).thenReturn(predicate);
+        when(cb.and(predicate)).thenReturn(predicate);
+
+        return predicate;
+    }
+
+    @SuppressWarnings("unchecked")
+    <T> void assertDatePredicate(
+        Specification<T> specification,
+        Root<T> root,
+        CriteriaQuery<?> query,
+        CriteriaBuilder cb,
+        String fieldName,
+        LocalDateTime expectedTime,
+        boolean isStart
+    ) {
+        Path<LocalDateTime> path = (Path<LocalDateTime>) mock(Path.class);
+        Predicate predicate = mock(Predicate.class);
+
+        when(root.<LocalDateTime>get(fieldName)).thenReturn(path);
+
+        if (isStart) {
+            when(cb.greaterThanOrEqualTo(path, expectedTime)).thenReturn(predicate);
+        } else {
+            when(cb.lessThanOrEqualTo(path, expectedTime)).thenReturn(predicate);
+        }
+
         when(cb.and(any(Predicate[].class))).thenReturn(predicate);
 
-        Specification<Genre> spec = SpecificationFactory.create(filter);
-        Predicate result = spec.toPredicate(root, query, cb);
-
+        Predicate result = specification.toPredicate(root, query, cb);
         assertThat(result).isEqualTo(predicate);
 
-        verify(root).get("name");
-        verify(cb).lower(path);
-        verify(cb).like(path, "%drama%");
+        verify(root).get(fieldName);
+
+        if (isStart) {
+            verify(cb).greaterThanOrEqualTo(path, expectedTime);
+        } else {
+            verify(cb).lessThanOrEqualTo(path, expectedTime);
+        }
+
         verify(cb).and(predicate);
     }
 

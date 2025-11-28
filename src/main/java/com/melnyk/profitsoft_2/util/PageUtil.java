@@ -1,7 +1,7 @@
 package com.melnyk.profitsoft_2.util;
 
 import com.melnyk.profitsoft_2.config.props.PaginationProps;
-import com.melnyk.profitsoft_2.dto.request.PageFilter;
+import com.melnyk.profitsoft_2.dto.request.filter.PageFilter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;

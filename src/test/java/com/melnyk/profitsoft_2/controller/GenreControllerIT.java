@@ -2,7 +2,7 @@ package com.melnyk.profitsoft_2.controller;
 
 import com.melnyk.profitsoft_2.Profitsoft2Application;
 import com.melnyk.profitsoft_2.config.TestConfig;
-import com.melnyk.profitsoft_2.dto.request.GenreFilter;
+import com.melnyk.profitsoft_2.dto.request.filter.impl.GenreFilter;
 import com.melnyk.profitsoft_2.dto.request.GenreRequestDto;
 import com.melnyk.profitsoft_2.dto.response.GenreDto;
 import com.melnyk.profitsoft_2.dto.response.PageDto;
@@ -160,6 +160,10 @@ class GenreControllerIT {
             "F",
             null,
             null,
+            null,
+            null,
+            null,
+            null,
             null
         );
 
@@ -173,7 +177,11 @@ class GenreControllerIT {
             "F",
             2,
             3,
-            "id,asc"
+            "id,asc",
+            null,
+            null,
+            null,
+            null
         );
 
         testSearchGenres(filter, expectedTotalElements, Comparator.comparingLong(GenreDto::getId));
@@ -204,7 +212,11 @@ class GenreControllerIT {
             "f",
             0,
             5,
-            "Id,aSc"
+            "Id,aSc",
+            null,
+            null,
+            null,
+            null
         );
 
         testSearchGenres(filter, expectedTotalElements, Comparator.comparingLong(GenreDto::getId));
