@@ -1,102 +1,62 @@
 [
   {
-    "name": "Fiction narrative",
-    "createdAt": "2025-11-27T01:47:50.3752278",
-    "updatedAt": "2025-11-27T01:47:50.3752278"
+    "name": "Fiction narrative"
   },
   {
-    "name": "Mystery",
-    "createdAt": "2025-11-27T01:47:50.3747236",
-    "updatedAt": "2025-11-27T01:47:50.3747236"
+    "name": "Mystery"
   },
   {
-    "name": "Comic/Graphic Novel",
-    "createdAt": "2025-11-27T01:47:50.3747236",
-    "updatedAt": "2025-11-27T01:47:50.3747236"
+    "name": "Comic/Graphic Novel"
   },
   {
-    "name": "Fairy tale",
-    "createdAt": "2025-11-27T01:47:50.3747236",
-    "updatedAt": "2025-11-27T01:47:50.3747236"
+    "name": "Fairy tale"
   },
   {
-    "name": "Legend",
-    "createdAt": "2025-11-27T01:47:50.3752278",
-    "updatedAt": "2025-11-27T01:47:50.3752278"
+    "name": "Legend"
   },
   {
-    "name": "Fiction in verse",
-    "createdAt": "2025-11-27T01:47:50.3752278",
-    "updatedAt": "2025-11-27T01:47:50.3752278"
+    "name": "Fiction in verse"
   },
   {
-    "name": "Classic",
-    "createdAt": "2025-11-27T01:47:50.3752278",
-    "updatedAt": "2025-11-27T01:47:50.3752278"
+    "name": "Classic"
   },
   {
-    "name": "Short story",
-    "createdAt": "2025-11-27T01:47:50.3752278",
-    "updatedAt": "2025-11-27T01:47:50.3752278"
+    "name": "Short story"
   },
   {
-    "name": "Fantasy",
-    "createdAt": "2025-11-27T01:47:50.3747236",
-    "updatedAt": "2025-11-27T01:47:50.3747236"
+    "name": "Fantasy"
   },
   {
-    "name": "Crime/Detective",
-    "createdAt": "2025-11-27T01:47:50.3752278",
-    "updatedAt": "2025-11-27T01:47:50.3752278"
+    "name": "Crime/Detective"
   },
   {
-    "name": "Essay",
-    "createdAt": "2025-11-27T01:47:50.3752278",
-    "updatedAt": "2025-11-27T01:47:50.3752278"
+    "name": "Essay"
   },
   {
-    "name": "Reference book",
-    "createdAt": "2025-11-27T01:47:50.3747236",
-    "updatedAt": "2025-11-27T01:47:50.3747236"
+    "name": "Reference book"
   },
   {
-    "name": "Narrative nonfiction",
-    "createdAt": "2025-11-27T01:47:50.3752278",
-    "updatedAt": "2025-11-27T01:47:50.3752278"
+    "name": "Narrative nonfiction"
   },
   {
-    "name": "Mythology",
-    "createdAt": "2025-11-27T01:47:50.3747236",
-    "updatedAt": "2025-11-27T01:47:50.3747236"
+    "name": "Mythology"
   },
   {
-    "name": "Metafiction",
-    "createdAt": "2025-11-27T01:47:50.3752278",
-    "updatedAt": "2025-11-27T01:47:50.3752278"
+    "name": "Metafiction"
   },
   {
-    "name": "Science fiction",
-    "createdAt": "2025-11-27T01:47:50.3752278",
-    "updatedAt": "2025-11-27T01:47:50.3752278"
+    "name": "Science fiction"
   },
   {
-    "name": "Suspense/Thriller",
-    "createdAt": "2025-11-27T01:47:50.3747236",
-    "updatedAt": "2025-11-27T01:47:50.3747236"
+    "name": "Suspense/Thriller"
   },
   {
-    "name": "Horror",
-    "createdAt": "2025-11-27T01:47:50.3752278",
-    "updatedAt": "2025-11-27T01:47:50.3752278"
+    "name": "Horror"
   },
   {
-    "name": "Textbook",
-    "createdAt": "2025-11-27T01:47:50.3752278",
-    "updatedAt": "2025-11-27T01:47:50.3752278"
+    "name": "Textbook"
   },
   {
-    "name": "Mythopoeia",
-    "createdAt": "2025-11-27T01:47:50.3752278",
-    "updatedAt": "2025-11-27T01:47:50.3752278"
+    "name": "Mythopoeia"
   }
 ]

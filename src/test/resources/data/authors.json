@@ -1,302 +1,202 @@
 [
   {
     "firstName": "Logan",
-    "lastName": "Stanton",
-    "createdAt": "2025-11-27T01:47:50.3610728",
-    "updatedAt": "2025-11-27T01:47:50.3610728"
+    "lastName": "Stanton"
   },
   {
     "firstName": "Pearlie",
-    "lastName": "Barton",
-    "createdAt": "2025-11-27T01:47:50.3620733",
-    "updatedAt": "2025-11-27T01:47:50.3620733"
+    "lastName": "Barton"
   },
   {
     "firstName": "Emogene",
-    "lastName": "Gerhold",
-    "createdAt": "2025-11-27T01:47:50.3630744",
-    "updatedAt": "2025-11-27T01:47:50.3630744"
+    "lastName": "Gerhold"
   },
   {
     "firstName": "Kellie",
-    "lastName": "Schiller",
-    "createdAt": "2025-11-27T01:47:50.3630744",
-    "updatedAt": "2025-11-27T01:47:50.3630744"
+    "lastName": "Schiller"
   },
   {
     "firstName": "Jamie",
-    "lastName": "Cassin",
-    "createdAt": "2025-11-27T01:47:50.3630744",
-    "updatedAt": "2025-11-27T01:47:50.3630744"
+    "lastName": "Cassin"
   },
   {
     "firstName": "Magali",
-    "lastName": "Stroman",
-    "createdAt": "2025-11-27T01:47:50.3630744",
-    "updatedAt": "2025-11-27T01:47:50.3630744"
+    "lastName": "Stroman"
   },
   {
     "firstName": "Cameron",
-    "lastName": "Parker",
-    "createdAt": "2025-11-27T01:47:50.3630744",
-    "updatedAt": "2025-11-27T01:47:50.3630744"
+    "lastName": "Parker"
   },
   {
     "firstName": "Marcene",
-    "lastName": "Emard",
-    "createdAt": "2025-11-27T01:47:50.3630744",
-    "updatedAt": "2025-11-27T01:47:50.3630744"
+    "lastName": "Emard"
   },
   {
     "firstName": "Shane",
-    "lastName": "Runte",
-    "createdAt": "2025-11-27T01:47:50.3630744",
-    "updatedAt": "2025-11-27T01:47:50.3630744"
+    "lastName": "Runte"
   },
   {
     "firstName": "Patty",
-    "lastName": "Gislason",
-    "createdAt": "2025-11-27T01:47:50.3630744",
-    "updatedAt": "2025-11-27T01:47:50.3630744"
+    "lastName": "Gislason"
   },
   {
     "firstName": "Walton",
-    "lastName": "Kertzmann",
-    "createdAt": "2025-11-27T01:47:50.3630744",
-    "updatedAt": "2025-11-27T01:47:50.3630744"
+    "lastName": "Kertzmann"
   },
   {
     "firstName": "Charley",
-    "lastName": "Littel",
-    "createdAt": "2025-11-27T01:47:50.3630744",
-    "updatedAt": "2025-11-27T01:47:50.3630744"
+    "lastName": "Littel"
   },
   {
     "firstName": "Selina",
-    "lastName": "Huel",
-    "createdAt": "2025-11-27T01:47:50.3630744",
-    "updatedAt": "2025-11-27T01:47:50.3630744"
+    "lastName": "Huel"
   },
   {
     "firstName": "Randall",
-    "lastName": "Thiel",
-    "createdAt": "2025-11-27T01:47:50.3630744",
-    "updatedAt": "2025-11-27T01:47:50.3630744"
+    "lastName": "Thiel"
   },
   {
     "firstName": "Markus",
-    "lastName": "Price",
-    "createdAt": "2025-11-27T01:47:50.3630744",
-    "updatedAt": "2025-11-27T01:47:50.3630744"
+    "lastName": "Price"
   },
   {
     "firstName": "Devin",
-    "lastName": "Dibbert",
-    "createdAt": "2025-11-27T01:47:50.3630744",
-    "updatedAt": "2025-11-27T01:47:50.3630744"
+    "lastName": "Dibbert"
   },
   {
     "firstName": "Carolyne",
-    "lastName": "Quigley",
-    "createdAt": "2025-11-27T01:47:50.3645794",
-    "updatedAt": "2025-11-27T01:47:50.3645794"
+    "lastName": "Quigley"
   },
   {
     "firstName": "Stewart",
-    "lastName": "Carter",
-    "createdAt": "2025-11-27T01:47:50.3645794",
-    "updatedAt": "2025-11-27T01:47:50.3645794"
+    "lastName": "Carter"
   },
   {
     "firstName": "Sandee",
-    "lastName": "Schinner",
-    "createdAt": "2025-11-27T01:47:50.3645794",
-    "updatedAt": "2025-11-27T01:47:50.3645794"
+    "lastName": "Schinner"
   },
   {
     "firstName": "Nova",
-    "lastName": "Thiel",
-    "createdAt": "2025-11-27T01:47:50.3645794",
-    "updatedAt": "2025-11-27T01:47:50.3645794"
+    "lastName": "Thiel"
   },
   {
     "firstName": "Rosette",
-    "lastName": "Turner",
-    "createdAt": "2025-11-27T01:47:50.3645794",
-    "updatedAt": "2025-11-27T01:47:50.3645794"
+    "lastName": "Turner"
   },
   {
     "firstName": "Rosemary",
-    "lastName": "Beahan",
-    "createdAt": "2025-11-27T01:47:50.3645794",
-    "updatedAt": "2025-11-27T01:47:50.3645794"
+    "lastName": "Beahan"
   },
   {
     "firstName": "Chester",
-    "lastName": "Raynor",
-    "createdAt": "2025-11-27T01:47:50.3645794",
-    "updatedAt": "2025-11-27T01:47:50.3645794"
+    "lastName": "Raynor"
   },
   {
     "firstName": "Ming",
-    "lastName": "Gorczany",
-    "createdAt": "2025-11-27T01:47:50.3645794",
-    "updatedAt": "2025-11-27T01:47:50.3645794"
+    "lastName": "Gorczany"
   },
   {
     "firstName": "Lavenia",
-    "lastName": "Dicki",
-    "createdAt": "2025-11-27T01:47:50.3645794",
-    "updatedAt": "2025-11-27T01:47:50.3645794"
+    "lastName": "Dicki"
   },
   {
     "firstName": "Burma",
-    "lastName": "Streich",
-    "createdAt": "2025-11-27T01:47:50.3645794",
-    "updatedAt": "2025-11-27T01:47:50.3645794"
+    "lastName": "Streich"
   },
   {
     "firstName": "Mose",
-    "lastName": "Fay",
-    "createdAt": "2025-11-27T01:47:50.3655844",
-    "updatedAt": "2025-11-27T01:47:50.3655844"
+    "lastName": "Fay"
   },
   {
     "firstName": "Larae",
-    "lastName": "Brakus",
-    "createdAt": "2025-11-27T01:47:50.3655844",
-    "updatedAt": "2025-11-27T01:47:50.3655844"
+    "lastName": "Brakus"
   },
   {
     "firstName": "Shawanna",
-    "lastName": "Considine",
-    "createdAt": "2025-11-27T01:47:50.3655844",
-    "updatedAt": "2025-11-27T01:47:50.3655844"
+    "lastName": "Considine"
   },
   {
     "firstName": "Cory",
-    "lastName": "Wehner",
-    "createdAt": "2025-11-27T01:47:50.3655844",
-    "updatedAt": "2025-11-27T01:47:50.3655844"
+    "lastName": "Wehner"
   },
   {
     "firstName": "Palmira",
-    "lastName": "Gorczany",
-    "createdAt": "2025-11-27T01:47:50.3655844",
-    "updatedAt": "2025-11-27T01:47:50.3655844"
+    "lastName": "Gorczany"
   },
   {
     "firstName": "Versie",
-    "lastName": "Wehner",
-    "createdAt": "2025-11-27T01:47:50.3655844",
-    "updatedAt": "2025-11-27T01:47:50.3655844"
+    "lastName": "Wehner"
   },
   {
     "firstName": "Jefferey",
-    "lastName": "Toy",
-    "createdAt": "2025-11-27T01:47:50.3655844",
-    "updatedAt": "2025-11-27T01:47:50.3655844"
+    "lastName": "Toy"
   },
   {
     "firstName": "Cody",
-    "lastName": "Grant",
-    "createdAt": "2025-11-27T01:47:50.3655844",
-    "updatedAt": "2025-11-27T01:47:50.3655844"
+    "lastName": "Grant"
   },
   {
     "firstName": "Rosena",
-    "lastName": "Toy",
-    "createdAt": "2025-11-27T01:47:50.3655844",
-    "updatedAt": "2025-11-27T01:47:50.3655844"
+    "lastName": "Toy"
   },
   {
     "firstName": "Alphonse",
-    "lastName": "Kling",
-    "createdAt": "2025-11-27T01:47:50.3655844",
-    "updatedAt": "2025-11-27T01:47:50.3655844"
+    "lastName": "Kling"
   },
   {
     "firstName": "Jonah",
-    "lastName": "Krajcik",
-    "createdAt": "2025-11-27T01:47:50.3655844",
-    "updatedAt": "2025-11-27T01:47:50.3655844"
+    "lastName": "Krajcik"
   },
   {
     "firstName": "Princess",
-    "lastName": "Senger",
-    "createdAt": "2025-11-27T01:47:50.3655844",
-    "updatedAt": "2025-11-27T01:47:50.3655844"
+    "lastName": "Senger"
   },
   {
     "firstName": "Shirleen",
-    "lastName": "Kiehn",
-    "createdAt": "2025-11-27T01:47:50.3655844",
-    "updatedAt": "2025-11-27T01:47:50.3655844"
+    "lastName": "Kiehn"
   },
   {
     "firstName": "Kasi",
-    "lastName": "Wilkinson",
-    "createdAt": "2025-11-27T01:47:50.3655844",
-    "updatedAt": "2025-11-27T01:47:50.3655844"
+    "lastName": "Wilkinson"
   },
   {
     "firstName": "Moshe",
-    "lastName": "Nolan",
-    "createdAt": "2025-11-27T01:47:50.3655844",
-    "updatedAt": "2025-11-27T01:47:50.3655844"
+    "lastName": "Nolan"
   },
   {
     "firstName": "Princess",
-    "lastName": "Schneider",
-    "createdAt": "2025-11-27T01:47:50.3655844",
-    "updatedAt": "2025-11-27T01:47:50.3655844"
+    "lastName": "Schneider"
   },
   {
     "firstName": "Weldon",
-    "lastName": "O'Kon",
-    "createdAt": "2025-11-27T01:47:50.3655844",
-    "updatedAt": "2025-11-27T01:47:50.3655844"
+    "lastName": "O'Kon"
   },
   {
     "firstName": "Ed",
-    "lastName": "Von",
-    "createdAt": "2025-11-27T01:47:50.3655844",
-    "updatedAt": "2025-11-27T01:47:50.3655844"
+    "lastName": "Von"
   },
   {
     "firstName": "Emma",
-    "lastName": "Lakin",
-    "createdAt": "2025-11-27T01:47:50.3671994",
-    "updatedAt": "2025-11-27T01:47:50.3671994"
+    "lastName": "Lakin"
   },
   {
     "firstName": "Darell",
-    "lastName": "Halvorson",
-    "createdAt": "2025-11-27T01:47:50.3671994",
-    "updatedAt": "2025-11-27T01:47:50.3671994"
+    "lastName": "Halvorson"
   },
   {
     "firstName": "Johnnie",
-    "lastName": "Rohan",
-    "createdAt": "2025-11-27T01:47:50.3671994",
-    "updatedAt": "2025-11-27T01:47:50.3671994"
+    "lastName": "Rohan"
   },
   {
     "firstName": "Jame",
-    "lastName": "D'Amore",
-    "createdAt": "2025-11-27T01:47:50.3671994",
-    "updatedAt": "2025-11-27T01:47:50.3671994"
+    "lastName": "D'Amore"
   },
   {
     "firstName": "Newton",
-    "lastName": "Durgan",
-    "createdAt": "2025-11-27T01:47:50.3671994",
-    "updatedAt": "2025-11-27T01:47:50.3671994"
+    "lastName": "Durgan"
   },
   {
     "firstName": "Aida",
-    "lastName": "Ebert",
-    "createdAt": "2025-11-27T01:47:50.3671994",
-    "updatedAt": "2025-11-27T01:47:50.3671994"
+    "lastName": "Ebert"
   }
 ]
