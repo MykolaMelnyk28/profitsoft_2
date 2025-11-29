@@ -1,6 +1,8 @@
 package com.melnyk.profitsoft_2.util;
 
+import com.melnyk.profitsoft_2.dto.request.filter.impl.AuthorFilter;
 import com.melnyk.profitsoft_2.dto.request.filter.impl.GenreFilter;
+import com.melnyk.profitsoft_2.entity.Author;
 import com.melnyk.profitsoft_2.entity.Genre;
 import jakarta.persistence.criteria.*;
 import org.junit.jupiter.api.Test;
@@ -15,7 +17,7 @@ import static org.mockito.Mockito.*;
 class SpecificationFactoryTest {
 
     @Test
-    void createGenre_withNullFilter_returnsNull() {
+    void createForGenre_withNullFilter_returnsNull() {
         Specification<Genre> spec = SpecificationFactory.createForGenre(null);
         assertThat(spec.toPredicate(null, null, null)).isNull();
     }
@@ -85,6 +87,89 @@ class SpecificationFactoryTest {
 
         Specification<Genre> spec = SpecificationFactory.createForGenre(filter);
         Root<Genre> root = mock(Root.class);
+        CriteriaQuery<?> query = mock(CriteriaQuery.class);
+        CriteriaBuilder cb = mock(CriteriaBuilder.class);
+
+        assertDatePredicate(spec, root, query, cb, "updatedAt", time, false);
+    }
+
+    // createForAuthor
+
+    @Test
+    void createForAuthor_withNullFilter_returnsNull() {
+        Specification<Author> spec = SpecificationFactory.createForAuthor(null);
+        assertThat(spec.toPredicate(null, null, null)).isNull();
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void createForAuthor_withNameFilter_returnsPredicate() {
+        AuthorFilter filter = new AuthorFilter("firstName1", "lastName1", null, null, null, null, null, null, null);
+
+        Root<Author> root = (Root<Author>) mock(Root.class);
+        CriteriaQuery<?> query = mock(CriteriaQuery.class);
+        CriteriaBuilder cb = mock(CriteriaBuilder.class);
+
+        Predicate expectedFirstNamePred = mockStringLikePredicate(
+            root, cb, "firstName", "%firstName1%"
+        );
+        Predicate expectedLastNamePred = mockStringLikePredicate(
+            root, cb, "lastName", "%lastName1%"
+        );
+        Predicate expected = cb.and(expectedFirstNamePred, expectedLastNamePred);
+
+        Specification<Author> spec = SpecificationFactory.createForAuthor(filter);
+        Predicate result = spec.toPredicate(root, query, cb);
+
+        assertThat(result).isEqualTo(expected);
+    }
+
+    @Test
+    void createForAuthor_withStartCreatedAt_returnsPredicate() {
+        LocalDateTime time = LocalDateTime.now();
+        AuthorFilter filter = new AuthorFilter(null, null, null, null, null, time, null, null, null);
+
+        Specification<Author> spec = SpecificationFactory.createForAuthor(filter);
+        Root<Author> root = mock(Root.class);
+        CriteriaQuery<?> query = mock(CriteriaQuery.class);
+        CriteriaBuilder cb = mock(CriteriaBuilder.class);
+
+        assertDatePredicate(spec, root, query, cb, "createdAt", time, true);
+    }
+
+    @Test
+    void createForAuthor_withEndCreatedAt_returnsPredicate() {
+        LocalDateTime time = LocalDateTime.now();
+        AuthorFilter filter = new AuthorFilter(null, null, null, null, null, null, time, null, null);
+
+        Specification<Author> spec = SpecificationFactory.createForAuthor(filter);
+        Root<Author> root = mock(Root.class);
+        CriteriaQuery<?> query = mock(CriteriaQuery.class);
+        CriteriaBuilder cb = mock(CriteriaBuilder.class);
+
+        assertDatePredicate(spec, root, query, cb, "createdAt", time, false);
+    }
+
+    @Test
+    void createForAuthor_withStartUpdatedAt_returnsPredicate() {
+        LocalDateTime time = LocalDateTime.now();
+        AuthorFilter filter = new AuthorFilter(null, null, null, null, null, null, null, time, null);
+
+        Specification<Author> spec = SpecificationFactory.createForAuthor(filter);
+        Root<Author> root = mock(Root.class);
+        CriteriaQuery<?> query = mock(CriteriaQuery.class);
+        CriteriaBuilder cb = mock(CriteriaBuilder.class);
+
+        assertDatePredicate(spec, root, query, cb, "updatedAt", time, true);
+    }
+
+    @Test
+    void createForAuthor_withEndUpdatedAt_returnsPredicate() {
+        LocalDateTime time = LocalDateTime.now();
+        AuthorFilter filter = new AuthorFilter(null, null, null, null, null, null, null, null, time);
+
+        Specification<Author> spec = SpecificationFactory.createForAuthor(filter);
+        Root<Author> root = mock(Root.class);
         CriteriaQuery<?> query = mock(CriteriaQuery.class);
         CriteriaBuilder cb = mock(CriteriaBuilder.class);
 
