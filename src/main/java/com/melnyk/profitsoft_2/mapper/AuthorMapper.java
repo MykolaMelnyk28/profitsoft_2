@@ -1,7 +1,8 @@
 package com.melnyk.profitsoft_2.mapper;
 
 import com.melnyk.profitsoft_2.dto.request.AuthorRequestDto;
-import com.melnyk.profitsoft_2.dto.response.AuthorDto;
+import com.melnyk.profitsoft_2.dto.response.AuthorDetailsDto;
+import com.melnyk.profitsoft_2.dto.response.AuthorInfoDto;
 import com.melnyk.profitsoft_2.entity.Author;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -10,7 +11,8 @@ import org.mapstruct.Mappings;
 @Mapper
 public interface AuthorMapper {
 
-    AuthorDto toDto(Author author);
+    AuthorDetailsDto toDetailsDto(Author author);
+    AuthorInfoDto toInfoDto(Author author);
 
     @Mappings({
         @Mapping(target = "id", ignore = true),

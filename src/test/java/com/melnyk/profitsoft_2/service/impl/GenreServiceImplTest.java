@@ -4,7 +4,8 @@ import com.melnyk.profitsoft_2.config.props.PaginationProps;
 import com.melnyk.profitsoft_2.dto.request.filter.impl.GenreFilter;
 import com.melnyk.profitsoft_2.dto.request.GenreRequestDto;
 import com.melnyk.profitsoft_2.dto.request.filter.PageFilter;
-import com.melnyk.profitsoft_2.dto.response.GenreDto;
+import com.melnyk.profitsoft_2.dto.response.GenreDetailsDto;
+import com.melnyk.profitsoft_2.dto.response.GenreInfoDto;
 import com.melnyk.profitsoft_2.dto.response.PageDto;
 import com.melnyk.profitsoft_2.entity.Genre;
 import com.melnyk.profitsoft_2.exception.ResourceAlreadyExistsException;
@@ -64,7 +65,7 @@ class GenreServiceImplTest {
             .updatedAt(FIXED_CREATED_AT)
             .build();
 
-        GenreDto dto = new GenreDto(1L, "Drama", FIXED_CREATED_AT, FIXED_CREATED_AT);
+        GenreDetailsDto dto = new GenreDetailsDto(1L, "Drama", FIXED_CREATED_AT, FIXED_CREATED_AT);
 
         when(transactionTemplate.execute(any()))
             .thenAnswer(invocation -> {
@@ -74,9 +75,9 @@ class GenreServiceImplTest {
         when(genreRepository.findByName("Drama")).thenReturn(Optional.empty());
         when(genreMapper.toEntity(req)).thenReturn(entity);
         when(genreRepository.save(entity)).thenReturn(entity);
-        when(genreMapper.toDto(entity)).thenReturn(dto);
+        when(genreMapper.toDetailsDto(entity)).thenReturn(dto);
 
-        GenreDto result = genreService.create(req);
+        GenreDetailsDto result = genreService.create(req);
 
         assertThat(result).isEqualTo(dto);
     }
@@ -110,12 +111,12 @@ class GenreServiceImplTest {
             .updatedAt(FIXED_CREATED_AT)
             .build();
 
-        GenreDto dto = new GenreDto(1L, "Drama", FIXED_CREATED_AT, FIXED_CREATED_AT);
+        GenreDetailsDto dto = new GenreDetailsDto(1L, "Drama", FIXED_CREATED_AT, FIXED_CREATED_AT);
 
         when(genreRepository.findById(1L)).thenReturn(Optional.of(entity));
-        when(genreMapper.toDto(entity)).thenReturn(dto);
+        when(genreMapper.toDetailsDto(entity)).thenReturn(dto);
 
-        GenreDto result = genreService.getById(1L);
+        GenreDetailsDto result = genreService.getById(1L);
 
         assertThat(result).isEqualTo(dto);
     }
@@ -139,20 +140,20 @@ class GenreServiceImplTest {
             .updatedAt(FIXED_CREATED_AT)
             .build();
 
-        GenreDto dto = new GenreDto(1L, "Sci-Fi", FIXED_CREATED_AT, FIXED_CREATED_AT);
+        GenreInfoDto dto = new GenreInfoDto(1L, "Sci-Fi");
 
         Page<Genre> page = new PageImpl<>(List.of(entity));
 
         when(genreRepository.findAll(any(Specification.class), any(Pageable.class)))
             .thenReturn(page);
 
-        when(genreMapper.toDto(entity)).thenReturn(dto);
+        when(genreMapper.toInfoDto(entity)).thenReturn(dto);
 
         try(var pageUtil = mockStatic(PageUtil.class)) {
             pageUtil.when(() -> PageUtil.pageableFrom(any(PageFilter.class), any(PaginationProps.class)))
                 .thenReturn(pageable);
 
-            PageDto<GenreDto> result = genreService.search(filter);
+            PageDto<GenreInfoDto> result = genreService.search(filter);
 
             assertThat(result.content()).containsExactly(dto);
             assertThat(result.totalElements()).isEqualTo(1);
@@ -173,7 +174,7 @@ class GenreServiceImplTest {
             .createdAt(FIXED_CREATED_AT).updatedAt(FIXED_CREATED_AT)
             .build();
 
-        GenreDto dto = new GenreDto(1L, "New", FIXED_CREATED_AT, FIXED_CREATED_AT);
+        GenreDetailsDto dto = new GenreDetailsDto(1L, "New", FIXED_CREATED_AT, FIXED_CREATED_AT);
 
         when(transactionTemplate.execute(any()))
             .thenAnswer(invocation -> {
@@ -183,9 +184,9 @@ class GenreServiceImplTest {
         when(genreRepository.findById(1L)).thenReturn(Optional.of(found));
         when(genreRepository.findByName("New")).thenReturn(Optional.empty());
         when(genreRepository.save(found)).thenReturn(updated);
-        when(genreMapper.toDto(updated)).thenReturn(dto);
+        when(genreMapper.toDetailsDto(updated)).thenReturn(dto);
 
-        GenreDto result = genreService.updateById(1L, req);
+        GenreDetailsDto result = genreService.updateById(1L, req);
 
         assertThat(result).isEqualTo(dto);
     }
@@ -223,7 +224,7 @@ class GenreServiceImplTest {
             .createdAt(FIXED_CREATED_AT).updatedAt(FIXED_CREATED_AT)
             .build();
 
-        GenreDto dto = new GenreDto(1L, "Same", FIXED_CREATED_AT, FIXED_CREATED_AT);
+        GenreDetailsDto dto = new GenreDetailsDto(1L, "Same", FIXED_CREATED_AT, FIXED_CREATED_AT);
 
         when(transactionTemplate.execute(any()))
             .thenAnswer(invocation -> {
@@ -231,9 +232,9 @@ class GenreServiceImplTest {
                 return cb.doInTransaction(null);
             });
         when(genreRepository.findById(1L)).thenReturn(Optional.of(found));
-        when(genreMapper.toDto(found)).thenReturn(dto);
+        when(genreMapper.toDetailsDto(found)).thenReturn(dto);
 
-        GenreDto result = genreService.updateById(1L, req);
+        GenreDetailsDto result = genreService.updateById(1L, req);
 
         assertThat(result).isEqualTo(dto);
         verify(genreRepository, never()).save(any());

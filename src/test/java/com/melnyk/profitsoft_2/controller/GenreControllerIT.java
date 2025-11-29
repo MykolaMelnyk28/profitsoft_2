@@ -4,7 +4,8 @@ import com.melnyk.profitsoft_2.Profitsoft2Application;
 import com.melnyk.profitsoft_2.config.TestConfig;
 import com.melnyk.profitsoft_2.dto.request.filter.impl.GenreFilter;
 import com.melnyk.profitsoft_2.dto.request.GenreRequestDto;
-import com.melnyk.profitsoft_2.dto.response.GenreDto;
+import com.melnyk.profitsoft_2.dto.response.GenreDetailsDto;
+import com.melnyk.profitsoft_2.dto.response.GenreInfoDto;
 import com.melnyk.profitsoft_2.dto.response.PageDto;
 import com.melnyk.profitsoft_2.entity.Genre;
 import com.melnyk.profitsoft_2.mapper.GenreMapper;
@@ -76,7 +77,7 @@ class GenreControllerIT {
     void getGenreById_givenExistingId_returnsGenreWith200() throws Exception {
         Long id = 3L;
         Genre foundGenre = GENRES.get(id);
-        GenreDto expectedResponseBody = genreMapper.toDto(foundGenre);
+        GenreDetailsDto expectedResponseBody = genreMapper.toDetailsDto(foundGenre);
 
         mockMvc.perform(get("/api/genres/{id}", id))
             .andExpect(status().isOk())
@@ -108,7 +109,7 @@ class GenreControllerIT {
             .getResponse()
             .getContentAsString();
 
-        GenreDto response = objectMapper.readValue(jsonResponse, GenreDto.class);
+        GenreDetailsDto response = objectMapper.readValue(jsonResponse, GenreDetailsDto.class);
 
         assertThat(response.getId()).isNotNull();
         assertThat(response.getName()).isEqualTo("newGenre");
@@ -167,7 +168,7 @@ class GenreControllerIT {
             null
         );
 
-        testSearchGenres(filter, expectedTotalElements, Comparator.comparingLong(GenreDto::getId));
+        testSearchGenres(filter, expectedTotalElements, Comparator.comparingLong(GenreInfoDto::getId));
     }
 
     @Test
@@ -184,7 +185,7 @@ class GenreControllerIT {
             null
         );
 
-        testSearchGenres(filter, expectedTotalElements, Comparator.comparingLong(GenreDto::getId));
+        testSearchGenres(filter, expectedTotalElements, Comparator.comparingLong(GenreInfoDto::getId));
     }
 
     @Test
@@ -219,7 +220,7 @@ class GenreControllerIT {
             null
         );
 
-        testSearchGenres(filter, expectedTotalElements, Comparator.comparingLong(GenreDto::getId));
+        testSearchGenres(filter, expectedTotalElements, Comparator.comparingLong(GenreInfoDto::getId));
     }
 
     // updateGenreById
@@ -286,21 +287,21 @@ class GenreControllerIT {
             .andExpect(status().isNotFound());
     }
 
-    void testSearchGenres(GenreFilter filter, int expectedTotalElements, Comparator<GenreDto> comparator) throws Exception {
+    void testSearchGenres(GenreFilter filter, int expectedTotalElements, Comparator<GenreInfoDto> comparator) throws Exception {
         int page = filter.page() != null ? filter.page() : 0;
         int size = filter.size() != null ? filter.size() : 10;
         int expectedTotalPages = (int)Math.ceil((double) expectedTotalElements / size);
 
-        List<GenreDto> expectedGenres = GENRES.values()
+        List<GenreInfoDto> expectedGenres = GENRES.values()
             .stream()
             .filter(x -> x.getName().toLowerCase().contains(filter.name().toLowerCase()))
             .skip((long) size * page)
             .limit(size)
-            .map(x -> new GenreDto(x.getId(), x.getName(), x.getCreatedAt(), x.getUpdatedAt()))
+            .map(x -> new GenreInfoDto(x.getId(), x.getName()))
             .sorted(comparator)
             .toList();
 
-        PageDto<GenreDto> expectedResponseBody = new PageDto<>(
+        PageDto<GenreInfoDto> expectedResponseBody = new PageDto<>(
             expectedGenres,
             page,
             size,

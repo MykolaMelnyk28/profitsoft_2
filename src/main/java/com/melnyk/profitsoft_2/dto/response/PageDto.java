@@ -4,7 +4,7 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-public record PageDto<T>(
+public record PageDto<T extends InfoDto>(
     List<T> content,
     int page,
     int size,

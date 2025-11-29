@@ -3,7 +3,8 @@ package com.melnyk.profitsoft_2.service.impl;
 import com.melnyk.profitsoft_2.config.props.PaginationProps;
 import com.melnyk.profitsoft_2.dto.request.AuthorRequestDto;
 import com.melnyk.profitsoft_2.dto.request.filter.impl.AuthorFilter;
-import com.melnyk.profitsoft_2.dto.response.AuthorDto;
+import com.melnyk.profitsoft_2.dto.response.AuthorDetailsDto;
+import com.melnyk.profitsoft_2.dto.response.AuthorInfoDto;
 import com.melnyk.profitsoft_2.dto.response.PageDto;
 import com.melnyk.profitsoft_2.entity.Author;
 import com.melnyk.profitsoft_2.exception.ResourceAlreadyExistsException;
@@ -33,44 +34,44 @@ public class AuthorServiceImpl implements AuthorService {
     private final TransactionTemplate transactionTemplate;
 
     @Override
-    public AuthorDto create(AuthorRequestDto body) throws ResourceAlreadyExistsException {
+    public AuthorDetailsDto create(AuthorRequestDto body) throws ResourceAlreadyExistsException {
         log.info("Creating author {}", body);
 
         Author created = transactionTemplate.execute(status -> createAuthor(body));
 
         log.info("Author created id={}", created.getId());
-        return authorMapper.toDto(created);
+        return authorMapper.toDetailsDto(created);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public AuthorDto getById(Long id) throws ResourceNotFoundException {
+    public AuthorDetailsDto getById(Long id) throws ResourceNotFoundException {
         log.info("Getting author id={}", id);
-        AuthorDto authorDto = authorMapper.toDto(getByIdOrThrow(id));
+        AuthorDetailsDto authorDetailsDto = authorMapper.toDetailsDto(getByIdOrThrow(id));
         log.info("Author found id={}", id);
-        return authorDto;
+        return authorDetailsDto;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public PageDto<AuthorDto> search(AuthorFilter filter) {
+    public PageDto<AuthorInfoDto> search(AuthorFilter filter) {
         log.info("Searching authors by filter {}", filter);
         Pageable pageable = PageUtil.pageableFrom(filter, paginationProps);
         Specification<Author> spec = SpecificationFactory.createForAuthor(filter);
         Page<Author> page = authorRepository.findAll(spec, pageable);
         log.info("{}", page);
-        return new PageDto<>(page.map(authorMapper::toDto));
+        return new PageDto<>(page.map(authorMapper::toInfoDto));
     }
 
     @Override
-    public AuthorDto updateById(Long id, AuthorRequestDto body)
+    public AuthorDetailsDto updateById(Long id, AuthorRequestDto body)
         throws ResourceNotFoundException, ResourceAlreadyExistsException {
         log.info("Updating author id={}", id);
 
         Author updated = transactionTemplate.execute(status -> updateAuthor(id, body));
 
         log.info("Updated author id={}", id);
-        return authorMapper.toDto(updated);
+        return authorMapper.toDetailsDto(updated);
     }
 
     @Override

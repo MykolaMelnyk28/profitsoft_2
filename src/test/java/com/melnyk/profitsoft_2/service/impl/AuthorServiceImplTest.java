@@ -4,7 +4,8 @@ import com.melnyk.profitsoft_2.config.props.PaginationProps;
 import com.melnyk.profitsoft_2.dto.request.AuthorRequestDto;
 import com.melnyk.profitsoft_2.dto.request.filter.PageFilter;
 import com.melnyk.profitsoft_2.dto.request.filter.impl.AuthorFilter;
-import com.melnyk.profitsoft_2.dto.response.AuthorDto;
+import com.melnyk.profitsoft_2.dto.response.AuthorDetailsDto;
+import com.melnyk.profitsoft_2.dto.response.AuthorInfoDto;
 import com.melnyk.profitsoft_2.dto.response.PageDto;
 import com.melnyk.profitsoft_2.entity.Author;
 import com.melnyk.profitsoft_2.exception.ResourceNotFoundException;
@@ -65,7 +66,7 @@ class AuthorServiceImplTest {
             .updatedAt(FIXED_CREATED_AT)
             .build();
 
-        AuthorDto dto = new AuthorDto(1L, "createdFirstName", "createdLastName", FIXED_CREATED_AT, FIXED_CREATED_AT);
+        AuthorDetailsDto dto = new AuthorDetailsDto(1L, "createdFirstName", "createdLastName", FIXED_CREATED_AT, FIXED_CREATED_AT);
 
         when(transactionTemplate.execute(any()))
             .thenAnswer(invocation -> {
@@ -74,9 +75,9 @@ class AuthorServiceImplTest {
             });
         when(authorMapper.toEntity(req)).thenReturn(entity);
         when(authorRepository.save(entity)).thenReturn(entity);
-        when(authorMapper.toDto(entity)).thenReturn(dto);
+        when(authorMapper.toDetailsDto(entity)).thenReturn(dto);
 
-        AuthorDto result = authorService.create(req);
+        AuthorDetailsDto result = authorService.create(req);
 
         assertThat(result).isEqualTo(dto);
     }
@@ -91,7 +92,7 @@ class AuthorServiceImplTest {
             .lastName("existingLastName")
             .build();
 
-        AuthorDto dto = new AuthorDto(1L, "createdFirstName", "createdLastName", FIXED_CREATED_AT, FIXED_CREATED_AT);
+        AuthorDetailsDto dto = new AuthorDetailsDto(1L, "createdFirstName", "createdLastName", FIXED_CREATED_AT, FIXED_CREATED_AT);
 
         when(transactionTemplate.execute(any()))
             .thenAnswer(invocation -> {
@@ -100,9 +101,9 @@ class AuthorServiceImplTest {
             });
         when(authorMapper.toEntity(req)).thenReturn(entity);
         when(authorRepository.save(entity)).thenReturn(entity);
-        when(authorMapper.toDto(entity)).thenReturn(dto);
+        when(authorMapper.toDetailsDto(entity)).thenReturn(dto);
 
-        AuthorDto result = authorService.create(req);
+        AuthorDetailsDto result = authorService.create(req);
 
         assertThat(result).isEqualTo(dto);
     }
@@ -117,12 +118,12 @@ class AuthorServiceImplTest {
             .updatedAt(FIXED_CREATED_AT)
             .build();
 
-        AuthorDto dto = new AuthorDto(1L, "firstName1", "lastName1", FIXED_CREATED_AT, FIXED_CREATED_AT);
+        AuthorDetailsDto dto = new AuthorDetailsDto(1L, "firstName1", "lastName1", FIXED_CREATED_AT, FIXED_CREATED_AT);
 
         when(authorRepository.findById(1L)).thenReturn(Optional.of(entity));
-        when(authorMapper.toDto(entity)).thenReturn(dto);
+        when(authorMapper.toDetailsDto(entity)).thenReturn(dto);
 
-        AuthorDto result = authorService.getById(1L);
+        AuthorDetailsDto result = authorService.getById(1L);
 
         assertThat(result).isEqualTo(dto);
     }
@@ -147,20 +148,20 @@ class AuthorServiceImplTest {
             .updatedAt(FIXED_CREATED_AT)
             .build();
 
-        AuthorDto dto = new AuthorDto(1L, "firstName1", "lastName1", FIXED_CREATED_AT, FIXED_CREATED_AT);
+        AuthorInfoDto dto = new AuthorInfoDto(1L, "firstName1", "lastName1");
 
         Page<Author> page = new PageImpl<>(List.of(entity));
 
         when(authorRepository.findAll(any(Specification.class), any(Pageable.class)))
             .thenReturn(page);
 
-        when(authorMapper.toDto(entity)).thenReturn(dto);
+        when(authorMapper.toInfoDto(entity)).thenReturn(dto);
 
         try(var pageUtil = mockStatic(PageUtil.class)) {
             pageUtil.when(() -> PageUtil.pageableFrom(any(PageFilter.class), any(PaginationProps.class)))
                 .thenReturn(pageable);
 
-            PageDto<AuthorDto> result = authorService.search(filter);
+            PageDto<AuthorInfoDto> result = authorService.search(filter);
 
             assertThat(result.content()).containsExactly(dto);
             assertThat(result.totalElements()).isEqualTo(1);
@@ -185,7 +186,7 @@ class AuthorServiceImplTest {
             .createdAt(FIXED_CREATED_AT).updatedAt(FIXED_CREATED_AT)
             .build();
 
-        AuthorDto dto = new AuthorDto(1L, "updatedFirstName", "updatedLastName", FIXED_CREATED_AT, FIXED_CREATED_AT);
+        AuthorDetailsDto dto = new AuthorDetailsDto(1L, "updatedFirstName", "updatedLastName", FIXED_CREATED_AT, FIXED_CREATED_AT);
 
         when(transactionTemplate.execute(any()))
             .thenAnswer(invocation -> {
@@ -194,38 +195,12 @@ class AuthorServiceImplTest {
             });
         when(authorRepository.findById(1L)).thenReturn(Optional.of(found));
         when(authorRepository.save(found)).thenReturn(updated);
-        when(authorMapper.toDto(updated)).thenReturn(dto);
+        when(authorMapper.toDetailsDto(updated)).thenReturn(dto);
 
-        AuthorDto result = authorService.updateById(1L, req);
+        AuthorDetailsDto result = authorService.updateById(1L, req);
 
         assertThat(result).isEqualTo(dto);
     }
-
-//    @Test
-//    void updateById_whenNameConflict_thenThrowsConflict() {
-//        AuthorRequestDto req = new AuthorRequestDto("Drama");
-//
-//        Author found = Author.builder()
-//            .id(1L)
-//            .name("Old")
-//            .build();
-//
-//        Author existing = Author.builder()
-//            .id(2L)
-//            .name("Drama")
-//            .build();
-//
-//        when(transactionTemplate.execute(any()))
-//            .thenAnswer(invocation -> {
-//                TransactionCallback<?> cb = invocation.getArgument(0);
-//                return cb.doInTransaction(null);
-//            });
-//        when(authorRepository.findById(1L)).thenReturn(Optional.of(found));
-//        when(authorRepository.findByName("Drama")).thenReturn(Optional.of(existing));
-//
-//        assertThatThrownBy(() -> authorService.updateById(1L, req))
-//            .isInstanceOf(ResourceAlreadyExistsException.class);
-//    }
 
     @Test
     void updateById_whenNoChanges_thenReturnsSameDto() {
@@ -238,7 +213,7 @@ class AuthorServiceImplTest {
             .createdAt(FIXED_CREATED_AT).updatedAt(FIXED_CREATED_AT)
             .build();
 
-        AuthorDto dto = new AuthorDto(1L, "firstName1", "lastName1", FIXED_CREATED_AT, FIXED_CREATED_AT);
+        AuthorDetailsDto dto = new AuthorDetailsDto(1L, "firstName1", "lastName1", FIXED_CREATED_AT, FIXED_CREATED_AT);
 
         when(transactionTemplate.execute(any()))
             .thenAnswer(invocation -> {
@@ -246,9 +221,9 @@ class AuthorServiceImplTest {
                 return cb.doInTransaction(null);
             });
         when(authorRepository.findById(1L)).thenReturn(Optional.of(found));
-        when(authorMapper.toDto(found)).thenReturn(dto);
+        when(authorMapper.toDetailsDto(found)).thenReturn(dto);
 
-        AuthorDto result = authorService.updateById(1L, req);
+        AuthorDetailsDto result = authorService.updateById(1L, req);
 
         assertThat(result).isEqualTo(dto);
         verify(authorRepository, never()).save(any());

@@ -1,7 +1,6 @@
 package com.melnyk.profitsoft_2.dto.response;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,12 +9,10 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class AuthorDto {
+public class GenreDetailsDto {
 
     private Long id;
-    private String firstName;
-    private String lastName;
+    private String name;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

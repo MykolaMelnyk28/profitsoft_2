@@ -2,8 +2,9 @@ package com.melnyk.profitsoft_2.controller;
 
 import com.melnyk.profitsoft_2.dto.request.filter.impl.GenreFilter;
 import com.melnyk.profitsoft_2.dto.request.GenreRequestDto;
+import com.melnyk.profitsoft_2.dto.response.GenreDetailsDto;
+import com.melnyk.profitsoft_2.dto.response.GenreInfoDto;
 import com.melnyk.profitsoft_2.dto.response.PageDto;
-import com.melnyk.profitsoft_2.dto.response.GenreDto;
 import com.melnyk.profitsoft_2.service.GenreService;
 import com.melnyk.profitsoft_2.util.URIUtil;
 import com.melnyk.profitsoft_2.validaton.Groups;
@@ -27,7 +28,7 @@ public class GenreController {
     private final GenreService genreService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<GenreDto> getGenreById(
+    public ResponseEntity<GenreDetailsDto> getGenreById(
         @PathVariable @Min(1) Long id
     ) {
         log.info("GET /api/genres/{}", id);
@@ -35,32 +36,32 @@ public class GenreController {
     }
 
     @PostMapping
-    public ResponseEntity<GenreDto> createGenre(
+    public ResponseEntity<GenreDetailsDto> createGenre(
         @RequestBody @Validated(Groups.OnCreate.class) GenreRequestDto body,
         UriComponentsBuilder uriBuilder
     ) {
         log.info("POST /api/genres body={}", body);
-        GenreDto created = genreService.create(body);
+        GenreDetailsDto created = genreService.create(body);
         URI uri = URIUtil.createLocationUri(uriBuilder, "/api/genres", created.getId());
         return ResponseEntity.created(uri).body(created);
     }
 
     @PostMapping("/_list")
-    public ResponseEntity<PageDto<GenreDto>> searchGenres(
+    public ResponseEntity<PageDto<GenreInfoDto>> searchGenres(
         @RequestBody @Valid GenreFilter filter
     ) {
         log.info("POST /api/genres/_list body={}", filter);
-        PageDto<GenreDto> genres = genreService.search(filter);
+        PageDto<GenreInfoDto> genres = genreService.search(filter);
         return ResponseEntity.ok(genres);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<GenreDto> updateGenreById(
+    public ResponseEntity<GenreDetailsDto> updateGenreById(
         @PathVariable @Min(1) Long id,
         @RequestBody @Validated(Groups.OnUpdate.class) GenreRequestDto body
     ) {
         log.info("PUT /api/genres/{} body={}", id, body);
-        GenreDto genre = genreService.updateById(id, body);
+        GenreDetailsDto genre = genreService.updateById(id, body);
         return ResponseEntity.ok(genre);
     }
 

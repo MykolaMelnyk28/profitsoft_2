@@ -2,7 +2,8 @@ package com.melnyk.profitsoft_2.controller;
 
 import com.melnyk.profitsoft_2.dto.request.AuthorRequestDto;
 import com.melnyk.profitsoft_2.dto.request.filter.impl.AuthorFilter;
-import com.melnyk.profitsoft_2.dto.response.AuthorDto;
+import com.melnyk.profitsoft_2.dto.response.AuthorDetailsDto;
+import com.melnyk.profitsoft_2.dto.response.AuthorInfoDto;
 import com.melnyk.profitsoft_2.dto.response.PageDto;
 import com.melnyk.profitsoft_2.service.AuthorService;
 import com.melnyk.profitsoft_2.util.URIUtil;
@@ -27,18 +28,18 @@ public class AuthorController {
     private final AuthorService authorService;
 
     @PostMapping
-    public ResponseEntity<AuthorDto> createAuthor(
+    public ResponseEntity<AuthorDetailsDto> createAuthor(
         @RequestBody @Validated(Groups.OnCreate.class) AuthorRequestDto body,
         UriComponentsBuilder uriBuilder
     ) {
         log.info("POST /api/authors body={}", body);
-        AuthorDto created = authorService.create(body);
+        AuthorDetailsDto created = authorService.create(body);
         URI uri = URIUtil.createLocationUri(uriBuilder, "/api/authors", created.getId());
         return ResponseEntity.created(uri).body(created);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AuthorDto> getAuthorById(
+    public ResponseEntity<AuthorDetailsDto> getAuthorById(
         @PathVariable @Min(1) Long id
     ) {
         log.info("GET /api/authors/{}", id);
@@ -46,26 +47,26 @@ public class AuthorController {
     }
 
     @PostMapping("/_list")
-    public ResponseEntity<PageDto<AuthorDto>> searchAuthors(
+    public ResponseEntity<PageDto<AuthorInfoDto>> searchAuthors(
         @RequestBody @Valid AuthorFilter filter
     ) {
         log.info("POST /api/authors/_list body={}", filter);
-        PageDto<AuthorDto> authors = authorService.search(filter);
+        PageDto<AuthorInfoDto> authors = authorService.search(filter);
         return ResponseEntity.ok(authors);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AuthorDto> updateAuthorById(
+    public ResponseEntity<AuthorDetailsDto> updateAuthorById(
         @PathVariable @Min(1) Long id,
         @RequestBody @Validated(Groups.OnUpdate.class) AuthorRequestDto body
     ) {
         log.info("PUT /api/authors/{} body={}", id, body);
-        AuthorDto genre = authorService.updateById(id, body);
+        AuthorDetailsDto genre = authorService.updateById(id, body);
         return ResponseEntity.ok(genre);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<AuthorDto> deleteAuthorById(
+    public ResponseEntity<AuthorDetailsDto> deleteAuthorById(
         @PathVariable @Min(1) Long id
     ) {
         log.info("DELETE /api/authors/{}", id);

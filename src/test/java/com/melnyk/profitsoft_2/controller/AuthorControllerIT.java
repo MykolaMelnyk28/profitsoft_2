@@ -4,7 +4,8 @@ import com.melnyk.profitsoft_2.Profitsoft2Application;
 import com.melnyk.profitsoft_2.config.TestConfig;
 import com.melnyk.profitsoft_2.dto.request.AuthorRequestDto;
 import com.melnyk.profitsoft_2.dto.request.filter.impl.AuthorFilter;
-import com.melnyk.profitsoft_2.dto.response.AuthorDto;
+import com.melnyk.profitsoft_2.dto.response.AuthorDetailsDto;
+import com.melnyk.profitsoft_2.dto.response.AuthorInfoDto;
 import com.melnyk.profitsoft_2.dto.response.PageDto;
 import com.melnyk.profitsoft_2.entity.Author;
 import com.melnyk.profitsoft_2.mapper.AuthorMapper;
@@ -76,7 +77,7 @@ class AuthorControllerIT {
     void getAuthorById_givenExistingId_returnsAuthorWith200() throws Exception {
         Long id = 3L;
         Author foundAuthor = AUTHORS.get(id);
-        AuthorDto expectedResponseBody = authorMapper.toDto(foundAuthor);
+        AuthorDetailsDto expectedResponseBody = authorMapper.toDetailsDto(foundAuthor);
 
         mockMvc.perform(get("/api/authors/{id}", id))
             .andExpect(status().isOk())
@@ -108,7 +109,7 @@ class AuthorControllerIT {
             .getResponse()
             .getContentAsString();
 
-        AuthorDto response = objectMapper.readValue(jsonResponse, AuthorDto.class);
+        AuthorDetailsDto response = objectMapper.readValue(jsonResponse, AuthorDetailsDto.class);
 
         assertThat(response.getId()).isNotNull();
         assertThat(response.getFirstName()).isEqualTo("John");
@@ -150,7 +151,7 @@ class AuthorControllerIT {
             .getResponse()
             .getContentAsString();
 
-        AuthorDto response = objectMapper.readValue(jsonResponse, AuthorDto.class);
+        AuthorDetailsDto response = objectMapper.readValue(jsonResponse, AuthorDetailsDto.class);
 
         assertThat(response.getId()).isNotNull();
         assertThat(response.getFirstName()).isEqualTo(existingAuthor.getFirstName());
@@ -185,7 +186,7 @@ class AuthorControllerIT {
             null
         );
 
-        testSearchAuthors(filter, expectedTotalElements, Comparator.comparingLong(AuthorDto::getId));
+        testSearchAuthors(filter, expectedTotalElements, Comparator.comparingLong(AuthorInfoDto::getId));
     }
 
     @Test
@@ -203,7 +204,7 @@ class AuthorControllerIT {
             null
         );
 
-        testSearchAuthors(filter, expectedTotalElements, Comparator.comparingLong(AuthorDto::getId));
+        testSearchAuthors(filter, expectedTotalElements, Comparator.comparingLong(AuthorInfoDto::getId));
     }
 
     @Test
@@ -239,7 +240,7 @@ class AuthorControllerIT {
             null
         );
 
-        testSearchAuthors(filter, expectedTotalElements, Comparator.comparingLong(AuthorDto::getId));
+        testSearchAuthors(filter, expectedTotalElements, Comparator.comparingLong(AuthorInfoDto::getId));
     }
 
     // updateAuthorById
@@ -308,22 +309,22 @@ class AuthorControllerIT {
             .andExpect(status().isNotFound());
     }
 
-    void testSearchAuthors(AuthorFilter filter, int expectedTotalElements, Comparator<AuthorDto> comparator) throws Exception {
+    void testSearchAuthors(AuthorFilter filter, int expectedTotalElements, Comparator<AuthorInfoDto> comparator) throws Exception {
         int page = filter.page() != null ? filter.page() : 0;
         int size = filter.size() != null ? filter.size() : 10;
         int expectedTotalPages = (int)Math.ceil((double) expectedTotalElements / size);
 
-        List<AuthorDto> expectedAuthors = AUTHORS.values()
+        List<AuthorInfoDto> expectedAuthors = AUTHORS.values()
             .stream()
             .filter(x -> x.getFirstName().toLowerCase().contains(filter.firstName().toLowerCase()))
             .filter(x -> x.getLastName().toLowerCase().contains(filter.lastName().toLowerCase()))
             .skip((long) size * page)
             .limit(size)
-            .map(x -> new AuthorDto(x.getId(), x.getFirstName(), x.getLastName(), x.getCreatedAt(), x.getUpdatedAt()))
+            .map(x -> new AuthorInfoDto(x.getId(), x.getFirstName(), x.getLastName()))
             .sorted(comparator)
             .toList();
 
-        PageDto<AuthorDto> expectedResponseBody = new PageDto<>(
+        PageDto<AuthorInfoDto> expectedResponseBody = new PageDto<>(
             expectedAuthors,
             page,
             size,
