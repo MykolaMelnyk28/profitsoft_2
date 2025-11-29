@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -85,8 +87,17 @@ public class GenreServiceImpl implements GenreService {
         log.info("Deleted genre id={}", id);
     }
 
+    @Override
     @Transactional(readOnly = true)
-    Genre getByIdOrThrow(Long id) throws ResourceNotFoundException {
+    public List<Genre> getAllByIds(Collection<Long> ids) {
+        if (ids.isEmpty()) {
+            return List.of();
+        }
+        return genreRepository.findAllById(ids);
+    }
+
+    @Transactional(readOnly = true)
+    public Genre getByIdOrThrow(Long id) throws ResourceNotFoundException {
         return genreRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("%d not found".formatted(id), id, "Genre"));
     }

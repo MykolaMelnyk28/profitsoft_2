@@ -1,14 +1,14 @@
 package com.melnyk.profitsoft_2.util;
 
+import com.melnyk.profitsoft_2.dto.request.filter.impl.BookFilter;
 import com.melnyk.profitsoft_2.dto.request.filter.CreationFilter;
 import com.melnyk.profitsoft_2.dto.request.filter.UpdatedFilter;
 import com.melnyk.profitsoft_2.dto.request.filter.impl.AuthorFilter;
 import com.melnyk.profitsoft_2.dto.request.filter.impl.GenreFilter;
 import com.melnyk.profitsoft_2.entity.Author;
+import com.melnyk.profitsoft_2.entity.Book;
 import com.melnyk.profitsoft_2.entity.Genre;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
@@ -58,8 +58,59 @@ public final class SpecificationFactory {
         };
     }
 
+    public static Specification<Book> createForBook(BookFilter filter) {
+        return (root, query, cb) -> {
+            if (filter == null) {
+                return null;
+            }
+            final List<Predicate> predicates = new ArrayList<>();
+
+            if (filter.title() != null) {
+                predicates.add(useLikeIgnoreCase(root, cb, "title", "%" + filter.title() + "%"));
+            }
+
+            if (filter.minYearPublished() != null) {
+                predicates.add(useMinInt(root, cb, "yearPublished", filter.minYearPublished()));
+            }
+
+            if (filter.maxYearPublished() != null) {
+                predicates.add(useMaxInt(root, cb, "yearPublished", filter.maxYearPublished()));
+            }
+
+            if (filter.minPages() != null) {
+                predicates.add(useMinInt(root, cb, "pages", filter.minYearPublished()));
+            }
+
+            if (filter.maxPages() != null) {
+                predicates.add(useMaxInt(root, cb, "pages", filter.maxYearPublished()));
+            }
+
+            if (filter.authorIds() != null && !filter.authorIds().isEmpty()) {
+                predicates.add(root.get("author").get("id").in(filter.authorIds()));
+            }
+
+            if (filter.genreIds() != null && !filter.genreIds().isEmpty()) {
+                Join<Book, Genre> genreJoin = root.join("genres", JoinType.INNER);
+                predicates.add(genreJoin.get("id").in(filter.authorIds()));
+            }
+
+            predicates.addAll(useCreationFilter(root, cb, filter));
+            predicates.addAll(useUpdatedFilter(root, cb, filter));
+
+            return cb.and(predicates.toArray(Predicate[]::new));
+        };
+    }
+
     private static Predicate useLikeIgnoreCase(Root<?> root, CriteriaBuilder cb, String name, String likeExpression) {
         return cb.like(cb.lower(root.get(name)), likeExpression.toLowerCase());
+    }
+
+    private static Predicate useMinInt(Root<?> root, CriteriaBuilder cb, String name, Integer value) {
+        return cb.greaterThanOrEqualTo(root.get(name), value);
+    }
+
+    private static Predicate useMaxInt(Root<?> root, CriteriaBuilder cb, String name, Integer value) {
+        return cb.lessThanOrEqualTo(root.get(name), value);
     }
 
     private static List<Predicate> useCreationFilter(Root<?> root, CriteriaBuilder cb, CreationFilter filter) {

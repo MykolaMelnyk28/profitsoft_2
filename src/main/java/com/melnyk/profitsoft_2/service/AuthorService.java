@@ -5,6 +5,7 @@ import com.melnyk.profitsoft_2.dto.request.filter.impl.AuthorFilter;
 import com.melnyk.profitsoft_2.dto.response.AuthorDetailsDto;
 import com.melnyk.profitsoft_2.dto.response.AuthorInfoDto;
 import com.melnyk.profitsoft_2.dto.response.PageDto;
+import com.melnyk.profitsoft_2.entity.Author;
 import com.melnyk.profitsoft_2.exception.ResourceAlreadyExistsException;
 import com.melnyk.profitsoft_2.exception.ResourceNotFoundException;
 
@@ -13,6 +14,8 @@ public interface AuthorService {
     AuthorDetailsDto create(AuthorRequestDto body) throws ResourceAlreadyExistsException;
 
     AuthorDetailsDto getById(Long id) throws ResourceNotFoundException;
+
+    Author getByIdOrThrow(Long id) throws ResourceNotFoundException;
 
     PageDto<AuthorInfoDto> search(AuthorFilter filter);
 

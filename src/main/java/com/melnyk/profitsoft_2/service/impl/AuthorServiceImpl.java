@@ -84,7 +84,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Transactional(readOnly = true)
-    Author getByIdOrThrow(Long id) throws ResourceNotFoundException {
+    public Author getByIdOrThrow(Long id) throws ResourceNotFoundException {
         return authorRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("%d not found".formatted(id), id, "Author"));
     }
