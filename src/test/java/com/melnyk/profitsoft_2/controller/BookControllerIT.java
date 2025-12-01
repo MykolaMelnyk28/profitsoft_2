@@ -16,6 +16,10 @@ import com.melnyk.profitsoft_2.repository.BookRepository;
 import com.melnyk.profitsoft_2.repository.GenreRepository;
 import com.melnyk.profitsoft_2.util.DataUtil;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +33,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
 
+import java.io.ByteArrayInputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -404,6 +409,31 @@ class BookControllerIT {
             .andExpect(status().isNotFound());
     }
 
+    // generateBookReport
+
+    @Test
+    void generateBookReport_givenValidFilters_returnsExcelFileWith200() throws Exception {
+        int expectedTotalElements = 23;
+        BookFilter filter = new BookFilter(
+            "f",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            "id, asc",
+            null,
+            null,
+            null,
+            null
+        );
+
+        testGenerationExcelBookReport(filter, expectedTotalElements, Comparator.comparingLong(BookInfoDto::getId));
+    }
+
     void testSearchBooks(BookFilter filter, int expectedTotalElements, Comparator<BookInfoDto> comparator) throws Exception {
         int page = filter.page() != null ? filter.page() : 0;
         int size = filter.size() != null ? filter.size() : 10;
@@ -434,26 +464,85 @@ class BookControllerIT {
             .andExpect(content().json(objectMapper.writeValueAsString(expectedResponseBody)));
     }
 
-//
-//    @Test
-//    void createBook_givenValidRequest_returnsCreatedWith201() {}
-//
-//    @Test
-//    void getBookById_givenExistingId_returnsBookWith200() {}
-//
-//    @Test
-//    void updateBookById_givenExistingIdAndValidRequest_returnsUpdatedBookWith200() {}
-//
-//    @Test
-//    void deleteBookById_givenExistingId_returnsNoContentWith204() {}
-//
-//    @Test
-//    void searchBooks_givenValidFilters_returnsBooksWith200() {}
-//
-//    @Test
-//    void reportBooks_givenValidFilters_returnsExcelFile() {}
-//
-//    @Test
-//    void uploadBooks_givenValidJsonFile_returnsUploadResultWithDetails() {}
+    void testGenerationExcelBookReport(BookFilter filter, int expectedTotalElements, Comparator<BookInfoDto> comparator) throws Exception {
+        List<BookInfoDto> expectedBooks = BOOKS.values()
+            .stream()
+            .filter(x -> filter.title() == null || x.getTitle().toLowerCase().contains(filter.title().toLowerCase()))
+            .map(bookMapper::toInfoDto)
+            .sorted(comparator)
+            .toList();
+
+        Map<String, CellType> expectedHeaderNames = new LinkedHashMap<>();
+        expectedHeaderNames.put("id", CellType.NUMERIC);
+        expectedHeaderNames.put("title", CellType.STRING);
+        expectedHeaderNames.put("description", CellType.STRING);
+        expectedHeaderNames.put("author", CellType.STRING);
+        expectedHeaderNames.put("yearPublished", CellType.NUMERIC);
+        expectedHeaderNames.put("pages", CellType.NUMERIC);
+        expectedHeaderNames.put("genres", CellType.STRING);
+
+        var response = mockMvc.perform(post("/api/books/_report")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_OCTET_STREAM)
+                .content(objectMapper.writeValueAsString(filter)))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM))
+            .andReturn()
+            .getResponse();
+
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(response.getContentAsByteArray());
+             XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
+
+            Sheet sheet = workbook.getSheet("books");
+            assertThat(sheet).isNotNull();
+
+            Iterator<Row> iter = sheet.rowIterator();
+            assertThat(iter.hasNext()).isTrue();
+
+            // headers check
+
+            Row headerRow = iter.next();
+            List<String> actualHeaderNames = new ArrayList<>();
+            headerRow.forEach(c -> actualHeaderNames.add(c.getStringCellValue()));
+
+            assertThat(actualHeaderNames).containsExactlyElementsOf(expectedHeaderNames.keySet());
+
+            // rows check
+
+            int rowIndex = 0;
+            while (iter.hasNext()) {
+                Row row = iter.next();
+                BookInfoDto expected = expectedBooks.get(rowIndex++);
+
+                int cellIndex = 0;
+
+                assertThat(row.getCell(cellIndex++).getNumericCellValue())
+                    .isEqualTo(expected.getId().doubleValue());
+
+                assertThat(row.getCell(cellIndex++).getStringCellValue())
+                    .isEqualTo(expected.getTitle());
+
+                assertThat(row.getCell(cellIndex++).getStringCellValue())
+                    .isEqualTo(expected.getDescription());
+
+                var author = expected.getAuthor();
+                String authorFullName = author.getFirstName() + " " + author.getLastName();
+                assertThat(row.getCell(cellIndex++).getStringCellValue())
+                    .isEqualTo(authorFullName);
+
+                assertThat((int) row.getCell(cellIndex++).getNumericCellValue())
+                    .isEqualTo(expected.getYearPublished());
+
+                assertThat((int) row.getCell(cellIndex++).getNumericCellValue())
+                    .isEqualTo(expected.getPages());
+
+                assertThat(row.getCell(cellIndex++).getStringCellValue())
+                    .isEqualTo(expected.getGenres().stream()
+                        .map(GenreInfoDto::getName)
+                        .collect(Collectors.joining(",")));
+            }
+            assertThat(rowIndex).isEqualTo(expectedTotalElements);
+        }
+    }
 
 }
