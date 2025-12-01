@@ -8,15 +8,18 @@ import com.melnyk.profitsoft_2.dto.response.PageDto;
 import com.melnyk.profitsoft_2.service.BookService;
 import com.melnyk.profitsoft_2.util.URIUtil;
 import com.melnyk.profitsoft_2.validaton.Groups;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URI;
 
 @RestController
@@ -74,7 +77,15 @@ public class BookController {
         return ResponseEntity.noContent().build();
     }
 
-    // TODO: write POST /api/books/_report
+    @PostMapping(value = "/_report", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public void generateBookReport(
+        @RequestBody @Valid BookFilter filter,
+        HttpServletResponse response
+    ) throws IOException {
+        log.info("POST /api/books/_report body={}", filter);
+        bookService.generateReport(filter, response);
+    }
+
     // TODO: write POST /api/books/upload
 
 }

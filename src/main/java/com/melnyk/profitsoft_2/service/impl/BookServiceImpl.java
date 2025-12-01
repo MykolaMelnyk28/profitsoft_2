@@ -15,17 +15,24 @@ import com.melnyk.profitsoft_2.repository.BookRepository;
 import com.melnyk.profitsoft_2.service.AuthorService;
 import com.melnyk.profitsoft_2.service.BookService;
 import com.melnyk.profitsoft_2.service.GenreService;
+import com.melnyk.profitsoft_2.service.ReportService;
 import com.melnyk.profitsoft_2.util.PageUtil;
 import com.melnyk.profitsoft_2.util.SpecificationFactory;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -43,6 +50,7 @@ public class BookServiceImpl implements BookService {
     private final AuthorService authorService;
     private final GenreService genreService;
     private final PaginationProps paginationProps;
+    private final ReportService<BookInfoDto> bookExcelReportService;
 
     @Override
     public BookDetailsDto create(BookRequestDto body) throws ResourceAlreadyExistsException {
@@ -97,6 +105,24 @@ public class BookServiceImpl implements BookService {
         getByIdOrThrow(id);
         bookRepository.deleteById(id);
         log.info("Deleted book id={}", id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public void generateReport(BookFilter filter, HttpServletResponse response) throws IOException {
+        String contentDispositionFormat = "attachment; filename=%s";
+        response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, contentDispositionFormat.formatted("report.xlsx"));
+
+        Sort sort = PageUtil.parseSort(filter.sort(), paginationProps.getSort());
+        Specification<Book> spec = SpecificationFactory.createForBook(filter);
+        List<BookInfoDto> books = bookRepository.findAll(spec, sort).stream()
+            .map(bookMapper::toInfoDto)
+            .toList();
+
+        OutputStream out = response.getOutputStream();
+        bookExcelReportService.write(books, out);
+        out.flush();
     }
 
     private Book createBook(BookRequestDto body) throws ResourceAlreadyExistsException {

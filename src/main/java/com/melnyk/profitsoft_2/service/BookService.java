@@ -8,6 +8,9 @@ import com.melnyk.profitsoft_2.dto.response.PageDto;
 import com.melnyk.profitsoft_2.entity.Book;
 import com.melnyk.profitsoft_2.exception.ResourceAlreadyExistsException;
 import com.melnyk.profitsoft_2.exception.ResourceNotFoundException;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
 
 public interface BookService {
 
@@ -22,5 +25,7 @@ public interface BookService {
     BookDetailsDto updateById(Long id, BookRequestDto body) throws ResourceNotFoundException, ResourceAlreadyExistsException;
 
     void deleteById(Long id) throws ResourceNotFoundException;
+
+    void generateReport(BookFilter filter, HttpServletResponse response) throws IOException;
 
 }

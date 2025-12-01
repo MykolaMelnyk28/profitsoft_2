@@ -36,7 +36,8 @@ public class Genre {
 
     @ManyToMany(
         mappedBy = "genres",
-        cascade = CascadeType.ALL
+        cascade = CascadeType.ALL,
+        fetch = FetchType.LAZY
     )
     @Builder.Default
     private List<Book> books = new ArrayList<>();
