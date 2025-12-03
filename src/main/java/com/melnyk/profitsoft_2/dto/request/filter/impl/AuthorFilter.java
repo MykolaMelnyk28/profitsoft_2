@@ -6,7 +6,7 @@ import com.melnyk.profitsoft_2.dto.request.filter.UpdatedFilter;
 import com.melnyk.profitsoft_2.entity.Author;
 import com.melnyk.profitsoft_2.validaton.SortExpression;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public record AuthorFilter(
     String firstName,
@@ -14,8 +14,8 @@ public record AuthorFilter(
     Integer page,
     Integer size,
     @SortExpression(targetType = Author.class) String sort,
-    LocalDateTime startCreatedAt,
-    LocalDateTime endCreatedAt,
-    LocalDateTime startUpdatedAt,
-    LocalDateTime endUpdatedAt
+    Instant startCreatedAt,
+    Instant endCreatedAt,
+    Instant startUpdatedAt,
+    Instant endUpdatedAt
 ) implements PageFilter, CreationFilter, UpdatedFilter { }

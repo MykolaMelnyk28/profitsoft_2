@@ -6,7 +6,7 @@ import com.melnyk.profitsoft_2.dto.request.filter.UpdatedFilter;
 import com.melnyk.profitsoft_2.entity.Book;
 import com.melnyk.profitsoft_2.validaton.SortExpression;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Set;
 
 public record BookFilter(
@@ -20,8 +20,8 @@ public record BookFilter(
     Integer page,
     Integer size,
     @SortExpression(targetType = Book.class) String sort,
-    LocalDateTime startCreatedAt,
-    LocalDateTime endCreatedAt,
-    LocalDateTime startUpdatedAt,
-    LocalDateTime endUpdatedAt
+    Instant startCreatedAt,
+    Instant endCreatedAt,
+    Instant startUpdatedAt,
+    Instant endUpdatedAt
 ) implements PageFilter, CreationFilter, UpdatedFilter { }

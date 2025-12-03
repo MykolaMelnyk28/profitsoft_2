@@ -6,15 +6,15 @@ import com.melnyk.profitsoft_2.dto.request.filter.UpdatedFilter;
 import com.melnyk.profitsoft_2.entity.Genre;
 import com.melnyk.profitsoft_2.validaton.SortExpression;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public record GenreFilter(
     String name,
     Integer page,
     Integer size,
     @SortExpression(targetType = Genre.class) String sort,
-    LocalDateTime startCreatedAt,
-    LocalDateTime endCreatedAt,
-    LocalDateTime startUpdatedAt,
-    LocalDateTime endUpdatedAt
+    Instant startCreatedAt,
+    Instant endCreatedAt,
+    Instant startUpdatedAt,
+    Instant endUpdatedAt
 ) implements PageFilter, CreationFilter, UpdatedFilter { }

@@ -1,9 +1,9 @@
 package com.melnyk.profitsoft_2.util;
 
-import com.melnyk.profitsoft_2.dto.request.filter.impl.BookFilter;
 import com.melnyk.profitsoft_2.dto.request.filter.CreationFilter;
 import com.melnyk.profitsoft_2.dto.request.filter.UpdatedFilter;
 import com.melnyk.profitsoft_2.dto.request.filter.impl.AuthorFilter;
+import com.melnyk.profitsoft_2.dto.request.filter.impl.BookFilter;
 import com.melnyk.profitsoft_2.dto.request.filter.impl.GenreFilter;
 import com.melnyk.profitsoft_2.entity.Author;
 import com.melnyk.profitsoft_2.entity.Book;
@@ -11,7 +11,7 @@ import com.melnyk.profitsoft_2.entity.Genre;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -121,30 +121,30 @@ public final class SpecificationFactory {
         return cb.lessThanOrEqualTo(root.get(name), value);
     }
 
-    private static List<Predicate> useCreationFilter(Root<?> root, CriteriaBuilder cb, CreationFilter filter) {
+    private static <T> List<Predicate> useCreationFilter(Root<T> root, CriteriaBuilder cb, CreationFilter filter) {
         List<Predicate> predicates = new ArrayList<>();
         if (filter.startCreatedAt() != null) {
-            LocalDateTime startCreatedAt = filter.startCreatedAt();
+            Instant startCreatedAt = filter.startCreatedAt();
             Predicate predicate = cb.greaterThanOrEqualTo(root.get("createdAt"), startCreatedAt);
             predicates.add(predicate);
         }
         if (filter.endCreatedAt() != null) {
-            LocalDateTime endCreatedAt = filter.endCreatedAt();
+            Instant endCreatedAt = filter.endCreatedAt();
             Predicate predicate = cb.lessThanOrEqualTo(root.get("createdAt"), endCreatedAt);
             predicates.add(predicate);
         }
         return predicates;
     }
 
-    private static List<Predicate> useUpdatedFilter(Root<?> root, CriteriaBuilder cb, UpdatedFilter filter) {
+    private static <T> List<Predicate> useUpdatedFilter(Root<T> root, CriteriaBuilder cb, UpdatedFilter filter) {
         List<Predicate> predicates = new ArrayList<>();
         if (filter.startUpdatedAt() != null) {
-            LocalDateTime startUpdatedAt = filter.startUpdatedAt();
+            Instant startUpdatedAt = filter.startUpdatedAt();
             Predicate predicate = cb.greaterThanOrEqualTo(root.get("updatedAt"), startUpdatedAt);
             predicates.add(predicate);
         }
         if (filter.endUpdatedAt() != null) {
-            LocalDateTime endUpdatedAt = filter.endUpdatedAt();
+            Instant endUpdatedAt = filter.endUpdatedAt();
             Predicate predicate = cb.lessThanOrEqualTo(root.get("updatedAt"), endUpdatedAt);
             predicates.add(predicate);
         }

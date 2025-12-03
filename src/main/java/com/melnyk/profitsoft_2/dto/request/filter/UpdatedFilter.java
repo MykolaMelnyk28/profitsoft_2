@@ -1,10 +1,10 @@
 package com.melnyk.profitsoft_2.dto.request.filter;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public interface UpdatedFilter {
 
-    LocalDateTime startUpdatedAt();
-    LocalDateTime endUpdatedAt();
+    Instant startUpdatedAt();
+    Instant endUpdatedAt();
 
 }
