@@ -15,6 +15,7 @@ import com.melnyk.profitsoft_2.repository.AuthorRepository;
 import com.melnyk.profitsoft_2.repository.BookRepository;
 import com.melnyk.profitsoft_2.repository.GenreRepository;
 import com.melnyk.profitsoft_2.util.DataUtil;
+import com.melnyk.profitsoft_2.util.ResourceUtil;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -29,11 +30,17 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import tools.jackson.databind.MappingIterator;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -434,6 +441,40 @@ class BookControllerIT {
         testGenerationExcelBookReport(filter, expectedTotalElements, Comparator.comparingLong(BookInfoDto::getId));
     }
 
+    // uploadBooks
+
+    @Test
+    void uploadBooks_givenMissingFileRequestPart_returns400() throws Exception {
+        mockMvc.perform(multipart("/api/books/upload")
+                .contentType(MediaType.MULTIPART_FORM_DATA))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void uploadBooks_givenJSONMultipartFileWithEmptyArray_returnsUploadResponseWith200() throws Exception {
+        UploadResponse expectedResponse = new UploadResponse(0, 0, 0, List.of());
+
+        MockMultipartFile file = new MockMultipartFile(
+            "file",
+            "books.json",
+            "application/json",
+            "[]".getBytes(StandardCharsets.UTF_8)
+        );
+
+        mockMvc.perform(multipart("/api/books/upload")
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .file(file))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(content().json(objectMapper.writeValueAsString(expectedResponse)));
+    }
+
+    @Test
+    void uploadBooks_givenValidJSONMultipartFile_returnsUploadResponseWith200() throws Exception {
+        Path jsonFilePath = ResourceUtil.getResourcePath("upload.json");
+        testUploadJSONFile(jsonFilePath, 10, 0);
+    }
+
     void testSearchBooks(BookFilter filter, int expectedTotalElements, Comparator<BookInfoDto> comparator) throws Exception {
         int page = filter.page() != null ? filter.page() : 0;
         int size = filter.size() != null ? filter.size() : 10;
@@ -542,6 +583,41 @@ class BookControllerIT {
                         .collect(Collectors.joining(",")));
             }
             assertThat(rowIndex).isEqualTo(expectedTotalElements);
+        }
+    }
+
+    void testUploadJSONFile(Path jsonFilePath, int expectedCreatedCount, int expectedFailedCount)
+        throws Exception {
+        InputStream inputStream = Files.newInputStream(jsonFilePath);
+
+        MockMultipartFile file = new MockMultipartFile(
+            "file",
+            jsonFilePath.getFileName().toString(),
+            MediaType.APPLICATION_JSON_VALUE,
+            inputStream
+        );
+
+        UploadResponse expectedResponse = new UploadResponse();
+        expectedResponse.setTotalCount(expectedCreatedCount + expectedFailedCount);
+        expectedResponse.setCreatedCount(expectedCreatedCount);
+        expectedResponse.setFailedCount(expectedFailedCount);
+        expectedResponse.setFailedItems(List.of());
+
+        mockMvc.perform(multipart("/api/books/upload")
+                .file(file))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(content().json(objectMapper.writeValueAsString(expectedResponse)));
+
+        try (InputStream reStream = Files.newInputStream(jsonFilePath)) {
+            MappingIterator<BookRequestDto> it = objectMapper
+                .readerFor(BookRequestDto.class)
+                .readValues(reStream);
+
+            while (it.hasNext()) {
+                BookRequestDto dto = it.next();
+                assertThat(bookRepository.findByTitleAndAuthorId(dto.title(), dto.authorId())).isPresent();
+            }
         }
     }
 

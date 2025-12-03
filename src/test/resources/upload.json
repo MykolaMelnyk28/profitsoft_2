@@ -1,0 +1,119 @@
+[
+  {
+    "title": "Time To Murder And Create",
+    "description": "description1",
+    "authorId": 29,
+    "yearPublished": 2014,
+    "pages": 484,
+    "genreIds": [
+      3,
+      15
+    ]
+  },
+  {
+    "title": "Jesting Pilate",
+    "description": "description1",
+    "authorId": 39,
+    "yearPublished": 2009,
+    "pages": 646,
+    "genreIds": [
+      3,
+      5,
+      9,
+      14
+    ]
+  },
+  {
+    "title": "Tirra Lirra by the River",
+    "description": "description3",
+    "authorId": 17,
+    "yearPublished": 2022,
+    "pages": 517,
+    "genreIds": [
+      20,
+      4,
+      6,
+      15
+    ]
+  },
+  {
+    "title": "A Many-Splendoured Thing",
+    "description": "description4",
+    "authorId": 45,
+    "yearPublished": 2017,
+    "pages": 116,
+    "genreIds": [
+      17,
+      4,
+      14
+    ]
+  },
+  {
+    "title": "In Death Ground",
+    "description": "description5",
+    "authorId": 37,
+    "yearPublished": 2000,
+    "pages": 30,
+    "genreIds": [
+      5,
+      7,
+      13
+    ]
+  },
+  {
+    "title": "Everything is Illuminated",
+    "description": "description6",
+    "authorId": 21,
+    "yearPublished": 2000,
+    "pages": 335,
+    "genreIds": [
+      4
+    ]
+  },
+  {
+    "title": "The Widening Gyre",
+    "description": "description7",
+    "authorId": 15,
+    "yearPublished": 2024,
+    "pages": 406,
+    "genreIds": [
+      16,
+      18,
+      7,
+      13
+    ]
+  },
+  {
+    "title": "Have His Carcase",
+    "description": "description8",
+    "authorId": 17,
+    "yearPublished": 2006,
+    "pages": 126,
+    "genreIds": [
+      16
+    ]
+  },
+  {
+    "title": "That Good Night",
+    "description": "description9",
+    "authorId": 38,
+    "yearPublished": 2025,
+    "pages": 538,
+    "genreIds": [
+      4,
+      5,
+      9,
+      10
+    ]
+  },
+  {
+    "title": "A Time to Kill",
+    "description": "description10",
+    "authorId": 47,
+    "yearPublished": 2000,
+    "pages": 106,
+    "genreIds": [
+      14
+    ]
+  }
+]
