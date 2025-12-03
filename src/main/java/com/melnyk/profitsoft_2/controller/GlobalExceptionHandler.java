@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import tools.jackson.core.JacksonException;
 
 import static com.melnyk.profitsoft_2.util.ExceptionUtil.*;
 
@@ -66,6 +67,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             ex.getClass().getName(),
             ex.getMessage());
         return buildProblemDetail(HttpStatus.BAD_REQUEST, "Bad request", "Bad request");
+    }
+
+    @ExceptionHandler(JacksonException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ProblemDetail handleJacksonException(JacksonException ex) {
+        log.warn("[{}] {}",
+            ex.getClass().getName(),
+            ex.getMessage());
+        String msg = extractShortMessage(ex);
+        return buildProblemDetail(HttpStatus.BAD_REQUEST, "Bad request", msg);
     }
 
     @ExceptionHandler(BindException.class)

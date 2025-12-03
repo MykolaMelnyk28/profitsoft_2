@@ -5,9 +5,11 @@ import com.melnyk.profitsoft_2.dto.request.filter.impl.BookFilter;
 import com.melnyk.profitsoft_2.dto.response.BookDetailsDto;
 import com.melnyk.profitsoft_2.dto.response.BookInfoDto;
 import com.melnyk.profitsoft_2.dto.response.PageDto;
+import com.melnyk.profitsoft_2.dto.response.UploadResponse;
 import com.melnyk.profitsoft_2.service.BookService;
 import com.melnyk.profitsoft_2.util.URIUtil;
 import com.melnyk.profitsoft_2.validaton.Groups;
+import com.melnyk.profitsoft_2.validaton.JsonFile;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -17,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
@@ -86,6 +89,14 @@ public class BookController {
         bookService.generateReport(filter, response);
     }
 
-    // TODO: write POST /api/books/upload
+    @PostMapping("/upload")
+    public ResponseEntity<UploadResponse> uploadBooks(
+        @RequestPart("file") @Valid @JsonFile MultipartFile file
+    ) throws IOException {
+
+        log.info("POST /api/books/upload file={}", file.getName());
+        UploadResponse response = bookService.uploadFromFile(file);
+        return ResponseEntity.ok(response);
+    }
 
 }

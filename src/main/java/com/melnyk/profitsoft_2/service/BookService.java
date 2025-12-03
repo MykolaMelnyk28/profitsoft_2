@@ -5,10 +5,12 @@ import com.melnyk.profitsoft_2.dto.request.filter.impl.BookFilter;
 import com.melnyk.profitsoft_2.dto.response.BookDetailsDto;
 import com.melnyk.profitsoft_2.dto.response.BookInfoDto;
 import com.melnyk.profitsoft_2.dto.response.PageDto;
+import com.melnyk.profitsoft_2.dto.response.UploadResponse;
 import com.melnyk.profitsoft_2.entity.Book;
 import com.melnyk.profitsoft_2.exception.ResourceAlreadyExistsException;
 import com.melnyk.profitsoft_2.exception.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -27,5 +29,7 @@ public interface BookService {
     void deleteById(Long id) throws ResourceNotFoundException;
 
     void generateReport(BookFilter filter, HttpServletResponse response) throws IOException;
+
+    UploadResponse uploadFromFile(MultipartFile file) throws IOException;
 
 }

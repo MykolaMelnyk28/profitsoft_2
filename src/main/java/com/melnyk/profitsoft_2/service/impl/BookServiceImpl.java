@@ -6,6 +6,7 @@ import com.melnyk.profitsoft_2.dto.request.filter.impl.BookFilter;
 import com.melnyk.profitsoft_2.dto.response.BookDetailsDto;
 import com.melnyk.profitsoft_2.dto.response.BookInfoDto;
 import com.melnyk.profitsoft_2.dto.response.PageDto;
+import com.melnyk.profitsoft_2.dto.response.UploadResponse;
 import com.melnyk.profitsoft_2.entity.Book;
 import com.melnyk.profitsoft_2.entity.Genre;
 import com.melnyk.profitsoft_2.exception.ResourceAlreadyExistsException;
@@ -21,6 +22,7 @@ import com.melnyk.profitsoft_2.util.SpecificationFactory;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.NestedExceptionUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -30,13 +32,13 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.web.multipart.MultipartFile;
+import tools.jackson.databind.MappingIterator;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,6 +53,7 @@ public class BookServiceImpl implements BookService {
     private final GenreService genreService;
     private final PaginationProps paginationProps;
     private final ReportService<BookInfoDto> bookExcelReportService;
+    private final ObjectMapper objectMapper;
 
     @Override
     public BookDetailsDto create(BookRequestDto body) throws ResourceAlreadyExistsException {
@@ -123,6 +126,39 @@ public class BookServiceImpl implements BookService {
         OutputStream out = response.getOutputStream();
         bookExcelReportService.write(books, out);
         out.flush();
+    }
+
+    @Override
+    @Transactional
+    public UploadResponse uploadFromFile(MultipartFile file) throws IOException {
+        UploadResponse response = new UploadResponse();
+        List<UploadResponse.FailedItem> failedItems = response.getFailedItems();
+        int createdCount = 0;
+
+        MappingIterator<BookRequestDto> iter = objectMapper
+            .readerFor(BookRequestDto.class)
+            .readValues(file.getInputStream());
+
+        while (iter.hasNext()) {
+            BookRequestDto dto = null;
+            dto = iter.next();
+
+            try {
+                Book book = createBook(dto);
+                createdCount++;
+            } catch (Exception e) {
+                Throwable root = NestedExceptionUtils.getMostSpecificCause(e);
+                failedItems.add(new UploadResponse.FailedItem(dto, root.getMessage()));
+            }
+        }
+        iter.close();
+
+        response.setCreatedCount(createdCount);
+        response.setFailedCount(failedItems.size());
+        response.setTotalCount(response.getCreatedCount() + failedItems.size());
+        response.setFailedItems(failedItems);
+
+        return response;
     }
 
     private Book createBook(BookRequestDto body) throws ResourceAlreadyExistsException {
