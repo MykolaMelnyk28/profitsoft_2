@@ -61,8 +61,16 @@ public final class SpecificationFactory {
     public static Specification<Book> createForBook(BookFilter filter) {
         return (root, query, cb) -> {
             if (filter == null) {
-                return null;
+                return cb.conjunction();
             }
+
+            query.distinct(true);
+
+            if (query.getResultType() != Long.class) {
+                root.fetch("author", JoinType.LEFT);
+                root.fetch("genres", JoinType.LEFT);
+            }
+
             final List<Predicate> predicates = new ArrayList<>();
 
             if (filter.title() != null) {
@@ -90,8 +98,8 @@ public final class SpecificationFactory {
             }
 
             if (filter.genreIds() != null && !filter.genreIds().isEmpty()) {
-                Join<Book, Genre> genreJoin = root.join("genres", JoinType.INNER);
-                predicates.add(genreJoin.get("id").in(filter.authorIds()));
+                Join<Book, Genre> genreJoin = root.join("genres", JoinType.LEFT);
+                predicates.add(genreJoin.get("id").in(filter.genreIds()));
             }
 
             predicates.addAll(useCreationFilter(root, cb, filter));

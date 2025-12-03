@@ -2,6 +2,7 @@ package com.melnyk.profitsoft_2.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -24,11 +25,7 @@ public class Book {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "books_seq")
-    @SequenceGenerator(
-        name = "books_seq",
-        sequenceName = "books_id_seq",
-        allocationSize = 1
-    )
+    @SequenceGenerator(name = "books_seq", sequenceName = "books_id_seq")
     private Long id;
 
     @Column(nullable = false)
@@ -53,6 +50,7 @@ public class Book {
         joinColumns = @JoinColumn(name = "book_id"),
         inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
+    @BatchSize(size = 20)
     @Builder.Default
     private Set<Genre> genres = new HashSet<>();
 

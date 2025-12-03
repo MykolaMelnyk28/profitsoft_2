@@ -21,11 +21,7 @@ public class Author {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "authors_seq")
-    @SequenceGenerator(
-        name = "authors_seq",
-        sequenceName = "authors_id_seq",
-        allocationSize = 1
-    )
+    @SequenceGenerator(name = "authors_seq", sequenceName = "authors_id_seq")
     private Long id;
 
     @Column(nullable = false)
@@ -38,7 +34,7 @@ public class Author {
         mappedBy = "author",
         orphanRemoval = true,
         fetch = FetchType.LAZY,
-        cascade = CascadeType.ALL
+        cascade = CascadeType.REMOVE
     )
     @Builder.Default
     private List<Book> books = new ArrayList<>();

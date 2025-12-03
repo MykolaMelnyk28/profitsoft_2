@@ -24,11 +24,7 @@ public class Genre {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "genres_seq")
-    @SequenceGenerator(
-        name = "genres_seq",
-        sequenceName = "genres_id_seq",
-        allocationSize = 1
-    )
+    @SequenceGenerator(name = "genres_seq", sequenceName = "genres_id_seq")
     private Long id;
 
     @Column(nullable = false)
@@ -36,7 +32,6 @@ public class Genre {
 
     @ManyToMany(
         mappedBy = "genres",
-        cascade = CascadeType.ALL,
         fetch = FetchType.LAZY
     )
     @Builder.Default
