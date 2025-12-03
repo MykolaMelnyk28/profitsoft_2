@@ -21,9 +21,9 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -31,8 +31,10 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.MappingIterator;
 import tools.jackson.databind.ObjectMapper;
 
@@ -52,11 +54,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = Profitsoft2Application.class)
 @AutoConfigureMockMvc
 @Import(TestConfig.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureEmbeddedDatabase(
     provider = AutoConfigureEmbeddedDatabase.DatabaseProvider.DEFAULT,
     type = AutoConfigureEmbeddedDatabase.DatabaseType.POSTGRES,
-    refresh = AutoConfigureEmbeddedDatabase.RefreshMode.AFTER_EACH_TEST_METHOD,
-    beanName = "datasource"
+    beanName = "bookDatasource"
 )
 @ActiveProfiles("test")
 class BookControllerIT {
@@ -91,7 +93,8 @@ class BookControllerIT {
 
     boolean isInitialized = false;
 
-    @BeforeEach
+    @BeforeAll
+    @Transactional
     void beforeEach() {
         if (!isInitialized) {
             DataUtil.saveDefaultGenres(objectMapper, genreRepository).forEach(x -> GENRES.put(x.getId(), x));
@@ -102,15 +105,10 @@ class BookControllerIT {
         isInitialized = true;
     }
 
-    @AfterEach
-    void afterEach() {
-        BOOKS.clear();
-        bookRepository.deleteAll();
-    }
-
     // getBookById
 
     @Test
+    @Transactional(readOnly = true)
     void getBookById_givenExistingId_returnsBookWith200() throws Exception {
         Long id = 3L;
         Book foundBook = BOOKS.get(id);
@@ -123,6 +121,7 @@ class BookControllerIT {
     }
 
     @Test
+    @Transactional(readOnly = true)
     void getBookById_givenNotExistingId_returns404() throws Exception {
         Long id = 9999L;
 
@@ -133,6 +132,8 @@ class BookControllerIT {
     // createBook
 
     @Test
+    @Transactional
+    @Rollback
     void createBook_givenValidRequest_returnsCreatedWith201() throws Exception {
         Long authorId = 1L;
         Author author = AUTHORS.get(authorId);
@@ -193,6 +194,8 @@ class BookControllerIT {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void createBook_givenExistingBook_returns409() throws Exception {
         Book existingBook = BOOKS.get(1L);
         BookRequestDto requestBody = new BookRequestDto(
@@ -220,6 +223,7 @@ class BookControllerIT {
     }
 
     @Test
+    @Transactional(readOnly = true)
     void searchBooks_givenValidRequestWithFilterValueAndDefaultPagination_returnsBooksWith200() throws Exception {
         int expectedTotalElements = 23;
         BookFilter filter = new BookFilter(
@@ -243,6 +247,7 @@ class BookControllerIT {
     }
 
     @Test
+    @Transactional(readOnly = true)
     void searchBooks_givenValidRequestWithFilterValueAndCustomPagination_returnsBooksWith200() throws Exception {
         int expectedTotalElements = 23;
         BookFilter filter = new BookFilter(
@@ -284,6 +289,7 @@ class BookControllerIT {
     }
 
     @Test
+    @Transactional(readOnly = true)
     void searchBooks_givenSortParamWithIgnoreCaseValue_returnsBooksWith200() throws Exception {
         int expectedTotalElements = 23;
         BookFilter filter = new BookFilter(
@@ -309,6 +315,8 @@ class BookControllerIT {
     // updateBookById
 
     @Test
+    @Transactional
+    @Rollback
     void updateBookById_givenExistingIdAndValidRequest_returnsUpdatedBookWith200() throws Exception {
         Long existingBookId = 1L;
         Book existingBook = BOOKS.get(existingBookId);
@@ -361,6 +369,7 @@ class BookControllerIT {
     }
 
     @Test
+    @Transactional(readOnly = true)
     void updateBookById_givenNotExistingIdAndValidRequest_returns404() throws Exception {
         Long id = 9999L;
 
@@ -401,6 +410,8 @@ class BookControllerIT {
     // deleteBookById
 
     @Test
+    @Transactional
+    @Rollback
     void deleteBookById_givenExistingId_returns204() throws Exception {
         Long id = 1L;
 
@@ -409,6 +420,7 @@ class BookControllerIT {
     }
 
     @Test
+    @Transactional(readOnly = true)
     void deleteBookById_givenNotExistingId_returns404() throws Exception {
         Long id = 9999L;
 
@@ -419,6 +431,7 @@ class BookControllerIT {
     // generateBookReport
 
     @Test
+    @Transactional(readOnly = true)
     void generateBookReport_givenValidFilters_returnsExcelFileWith200() throws Exception {
         int expectedTotalElements = 23;
         BookFilter filter = new BookFilter(
@@ -451,6 +464,8 @@ class BookControllerIT {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void uploadBooks_givenJSONMultipartFileWithEmptyArray_returnsUploadResponseWith200() throws Exception {
         UploadResponse expectedResponse = new UploadResponse(0, 0, 0, List.of());
 
@@ -470,6 +485,8 @@ class BookControllerIT {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void uploadBooks_givenValidJSONMultipartFile_returnsUploadResponseWith200() throws Exception {
         Path jsonFilePath = ResourceUtil.getResourcePath("upload.json");
         testUploadJSONFile(jsonFilePath, 10, 0);

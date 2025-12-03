@@ -2,8 +2,8 @@ package com.melnyk.profitsoft_2.controller;
 
 import com.melnyk.profitsoft_2.Profitsoft2Application;
 import com.melnyk.profitsoft_2.config.TestConfig;
-import com.melnyk.profitsoft_2.dto.request.filter.impl.GenreFilter;
 import com.melnyk.profitsoft_2.dto.request.GenreRequestDto;
+import com.melnyk.profitsoft_2.dto.request.filter.impl.GenreFilter;
 import com.melnyk.profitsoft_2.dto.response.GenreDetailsDto;
 import com.melnyk.profitsoft_2.dto.response.GenreInfoDto;
 import com.melnyk.profitsoft_2.dto.response.PageDto;
@@ -12,17 +12,19 @@ import com.melnyk.profitsoft_2.mapper.GenreMapper;
 import com.melnyk.profitsoft_2.repository.GenreRepository;
 import com.melnyk.profitsoft_2.util.DataUtil;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.Comparator;
@@ -37,11 +39,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = Profitsoft2Application.class)
 @AutoConfigureMockMvc
 @Import(TestConfig.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureEmbeddedDatabase(
     provider = AutoConfigureEmbeddedDatabase.DatabaseProvider.DEFAULT,
     type = AutoConfigureEmbeddedDatabase.DatabaseType.POSTGRES,
-    refresh = AutoConfigureEmbeddedDatabase.RefreshMode.AFTER_EACH_TEST_METHOD,
-    beanName = "datasource"
+    beanName = "genreDatasource"
 )
 @ActiveProfiles("test")
 class GenreControllerIT {
@@ -60,20 +62,16 @@ class GenreControllerIT {
     @Autowired
     GenreMapper genreMapper;
 
-    @BeforeEach
+    @BeforeAll
+    @Transactional
     void beforeEach() {
         DataUtil.saveDefaultGenres(objectMapper, genreRepository).forEach(x -> GENRES.put(x.getId(), x));
-    }
-
-    @AfterEach
-    void afterEach() {
-        GENRES.clear();
-        genreRepository.deleteAll();
     }
 
     // getGenreById
 
     @Test
+    @Transactional(readOnly = true)
     void getGenreById_givenExistingId_returnsGenreWith200() throws Exception {
         Long id = 3L;
         Genre foundGenre = GENRES.get(id);
@@ -86,6 +84,7 @@ class GenreControllerIT {
     }
 
     @Test
+    @Transactional(readOnly = true)
     void getGenreById_givenNotExistingId_returns404() throws Exception {
         Long id = 9999L;
 
@@ -96,6 +95,8 @@ class GenreControllerIT {
     // createGenre
 
     @Test
+    @Transactional
+    @Rollback
     void createGenre_givenValidRequest_returnsCreatedWith201() throws Exception {
         GenreRequestDto requestBody = new GenreRequestDto("newGenre");
 
@@ -135,6 +136,8 @@ class GenreControllerIT {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void createGenre_givenExistingGenre_returns409() throws Exception {
         String existingName = GENRES.get(1L).getName();
         GenreRequestDto requestBody = new GenreRequestDto(existingName);
@@ -155,6 +158,7 @@ class GenreControllerIT {
     }
 
     @Test
+    @Transactional(readOnly = true)
     void searchGenres_givenValidRequestWithFilterValueAndDefaultPagination_returnsGenresWith200() throws Exception {
         int expectedTotalElements = 8;
         GenreFilter filter = new GenreFilter(
@@ -172,6 +176,7 @@ class GenreControllerIT {
     }
 
     @Test
+    @Transactional(readOnly = true)
     void searchGenres_givenValidRequestWithFilterValueAndCustomPagination_returnsGenresWith200() throws Exception {
         int expectedTotalElements = 8;
         GenreFilter filter = new GenreFilter(
@@ -207,6 +212,7 @@ class GenreControllerIT {
     }
 
     @Test
+    @Transactional(readOnly = true)
     void searchGenres_givenSortParamWithIgnoreCaseValue_returnsGenresWith200() throws Exception {
         int expectedTotalElements = 8;
         GenreFilter filter = new GenreFilter(
@@ -226,6 +232,8 @@ class GenreControllerIT {
     // updateGenreById
 
     @Test
+    @Transactional
+    @Rollback
     void updateGenreById_givenExistingIdAndValidRequest_returnsUpdatedGenreWith200() throws Exception {
         Long id = 1L;
         GenreRequestDto requestBody = new GenreRequestDto("updatedGenre1");
@@ -241,6 +249,7 @@ class GenreControllerIT {
     }
 
     @Test
+    @Transactional(readOnly = true)
     void updateGenreById_givenNotExistingIdAndValidRequest_returns404() throws Exception {
         Long id = 9999L;
 
@@ -272,6 +281,8 @@ class GenreControllerIT {
     // deleteGenreById
 
     @Test
+    @Transactional
+    @Rollback
     void deleteGenreById_givenExistingId_returns204() throws Exception {
         Long id = 1L;
 
@@ -280,6 +291,7 @@ class GenreControllerIT {
     }
 
     @Test
+    @Transactional(readOnly = true)
     void deleteGenreById_givenNotExistingId_returns404() throws Exception {
         Long id = 9999L;
 

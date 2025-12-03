@@ -12,17 +12,19 @@ import com.melnyk.profitsoft_2.mapper.AuthorMapper;
 import com.melnyk.profitsoft_2.repository.AuthorRepository;
 import com.melnyk.profitsoft_2.util.DataUtil;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.Comparator;
@@ -37,11 +39,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = Profitsoft2Application.class)
 @AutoConfigureMockMvc
 @Import(TestConfig.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureEmbeddedDatabase(
     provider = AutoConfigureEmbeddedDatabase.DatabaseProvider.DEFAULT,
     type = AutoConfigureEmbeddedDatabase.DatabaseType.POSTGRES,
-    refresh = AutoConfigureEmbeddedDatabase.RefreshMode.AFTER_EACH_TEST_METHOD,
-    beanName = "datasource"
+    beanName = "authorDatasource"
 )
 @ActiveProfiles("test")
 class AuthorControllerIT {
@@ -60,20 +62,16 @@ class AuthorControllerIT {
     @Autowired
     AuthorMapper authorMapper;
 
-    @BeforeEach
+    @BeforeAll
+    @Transactional
     void beforeEach() {
         DataUtil.saveDefaultAuthors(objectMapper, authorRepository).forEach(x -> AUTHORS.put(x.getId(), x));
-    }
-
-    @AfterEach
-    void afterEach() {
-        AUTHORS.clear();
-        authorRepository.deleteAll();
     }
 
     // getAuthorById
 
     @Test
+    @Transactional(readOnly = true)
     void getAuthorById_givenExistingId_returnsAuthorWith200() throws Exception {
         Long id = 3L;
         Author foundAuthor = AUTHORS.get(id);
@@ -86,6 +84,7 @@ class AuthorControllerIT {
     }
 
     @Test
+    @Transactional(readOnly = true)
     void getAuthorById_givenNotExistingId_returns404() throws Exception {
         Long id = 9999L;
 
@@ -96,6 +95,8 @@ class AuthorControllerIT {
     // createAuthor
 
     @Test
+    @Transactional
+    @Rollback
     void createAuthor_givenValidRequest_returnsCreatedWith201() throws Exception {
         AuthorRequestDto requestBody = new AuthorRequestDto("John", "Smith");
 
@@ -137,6 +138,8 @@ class AuthorControllerIT {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void createAuthor_givenExistingAuthor_returns200() throws Exception {
         Author existingAuthor = AUTHORS.get(1L);
         AuthorRequestDto requestBody = new AuthorRequestDto(existingAuthor.getFirstName(), existingAuthor.getLastName());
@@ -172,6 +175,7 @@ class AuthorControllerIT {
     }
 
     @Test
+    @Transactional(readOnly = true)
     void searchAuthors_givenValidRequestWithFilterValueAndDefaultPagination_returnsAuthorsWith200() throws Exception {
         int expectedTotalElements = 5;
         AuthorFilter filter = new AuthorFilter(
@@ -190,6 +194,7 @@ class AuthorControllerIT {
     }
 
     @Test
+    @Transactional(readOnly = true)
     void searchAuthors_givenValidRequestWithFilterValueAndCustomPagination_returnsAuthorsWith200() throws Exception {
         int expectedTotalElements = 5;
         AuthorFilter filter = new AuthorFilter(
@@ -226,6 +231,7 @@ class AuthorControllerIT {
     }
 
     @Test
+    @Transactional(readOnly = true)
     void searchAuthors_givenSortParamWithIgnoreCaseValue_returnsAuthorsWith200() throws Exception {
         int expectedTotalElements = 5;
         AuthorFilter filter = new AuthorFilter(
@@ -246,6 +252,8 @@ class AuthorControllerIT {
     // updateAuthorById
 
     @Test
+    @Transactional
+    @Rollback
     void updateAuthorById_givenExistingIdAndValidRequest_returnsUpdatedAuthorWith200() throws Exception {
         Long id = 1L;
         AuthorRequestDto requestBody = new AuthorRequestDto("updatedFirstName", "updatedLastName");
@@ -262,6 +270,7 @@ class AuthorControllerIT {
     }
 
     @Test
+    @Transactional(readOnly = true)
     void updateAuthorById_givenNotExistingIdAndValidRequest_returns404() throws Exception {
         Long id = 9999L;
         AuthorRequestDto requestBody = new AuthorRequestDto("updatedFirstName", "updatedLastName");
@@ -294,6 +303,7 @@ class AuthorControllerIT {
     // deleteAuthorById
 
     @Test
+    @Transactional(readOnly = true)
     void deleteAuthorById_givenExistingId_returns204() throws Exception {
         Long id = 1L;
 
@@ -302,6 +312,7 @@ class AuthorControllerIT {
     }
 
     @Test
+    @Transactional(readOnly = true)
     void deleteAuthorById_givenNotExistingId_returns404() throws Exception {
         Long id = 9999L;
 
