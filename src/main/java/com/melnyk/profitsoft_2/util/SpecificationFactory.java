@@ -68,7 +68,6 @@ public final class SpecificationFactory {
 
             if (query.getResultType() != Long.class) {
                 root.fetch("author", JoinType.LEFT);
-                root.fetch("genres", JoinType.LEFT);
             }
 
             final List<Predicate> predicates = new ArrayList<>();

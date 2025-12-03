@@ -32,7 +32,7 @@ public class Book {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     private Author author;
 
@@ -42,7 +42,7 @@ public class Book {
     @Column(nullable = false)
     private Integer pages;
 
-    @ManyToMany()
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "books_genres",
         joinColumns = @JoinColumn(name = "book_id"),

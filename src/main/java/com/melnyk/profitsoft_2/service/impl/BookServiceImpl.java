@@ -129,36 +129,65 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    @Transactional
     public UploadResponse uploadFromFile(MultipartFile file) throws IOException {
         UploadResponse response = new UploadResponse();
         List<UploadResponse.FailedItem> failedItems = response.getFailedItems();
         int createdCount = 0;
 
+        int batchSize = 50;
+        List<Book> batchToSave = new ArrayList<>(batchSize);
+        Set<String> seenKeysInFile = new HashSet<>();
+
         MappingIterator<BookRequestDto> iter = objectMapper
             .readerFor(BookRequestDto.class)
             .readValues(file.getInputStream());
 
+        BookRequestDto currentDto;
         while (iter.hasNext()) {
-            BookRequestDto dto = null;
-            dto = iter.next();
+            currentDto = iter.next();
+
+            String key = currentDto.title() + ":" + currentDto.authorId();
+
+            if (!seenKeysInFile.add(key)) {
+                failedItems.add(new UploadResponse.FailedItem(currentDto, "The title and authorId combination already exists"));
+                continue;
+            }
 
             try {
-                Book book = createBook(dto);
-                createdCount++;
+                checkUniqueFieldsOrThrow(currentDto);
+                Book book = bookMapper.toEntity(currentDto);
+                book.setAuthor(authorService.getByIdOrThrow(currentDto.authorId()));
+                book.getGenres().addAll(getGenresByIds(currentDto.genreIds()));
+
+                batchToSave.add(book);
+
+                if (batchToSave.size() >= batchSize) {
+                    saveBatch(batchToSave);
+                    createdCount += batchToSave.size();
+                    batchToSave.clear();
+                }
             } catch (Exception e) {
                 Throwable root = NestedExceptionUtils.getMostSpecificCause(e);
-                failedItems.add(new UploadResponse.FailedItem(dto, root.getMessage()));
+                failedItems.add(new UploadResponse.FailedItem(currentDto, root.getMessage()));
             }
         }
         iter.close();
 
+        if (!batchToSave.isEmpty()) {
+            saveBatch(batchToSave);
+            createdCount += batchToSave.size();
+        }
+
         response.setCreatedCount(createdCount);
         response.setFailedCount(failedItems.size());
-        response.setTotalCount(response.getCreatedCount() + failedItems.size());
+        response.setTotalCount(createdCount + failedItems.size());
         response.setFailedItems(failedItems);
 
         return response;
+    }
+
+    private void saveBatch(List<Book> batchToSave) {
+        transactionTemplate.execute(status -> bookRepository.saveAll(batchToSave));
     }
 
     private Book createBook(BookRequestDto body) throws ResourceAlreadyExistsException {
@@ -214,7 +243,6 @@ public class BookServiceImpl implements BookService {
         return found;
     }
 
-    @Transactional(readOnly = true)
     private void checkUniqueFieldsOrThrow(BookRequestDto body) throws ResourceNotFoundException {
         Objects.requireNonNull(body);
         Optional<Book> opt = bookRepository.findByTitleAndAuthorId(body.title(), body.authorId());
