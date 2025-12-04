@@ -56,7 +56,6 @@ public class AuthorController {
         @RequestBody @Validated(Groups.OnCreate.class) AuthorRequestDto body,
         UriComponentsBuilder uriBuilder
     ) {
-        log.info("POST /api/authors body={}", body);
         AuthorDetailsDto created = authorService.create(body);
         URI uri = URIUtil.createLocationUri(uriBuilder, "/api/authors", created.getId());
         return ResponseEntity.created(uri).body(created);
@@ -86,7 +85,6 @@ public class AuthorController {
     public ResponseEntity<AuthorDetailsDto> getAuthorById(
         @PathVariable @Min(1) Long id
     ) {
-        log.info("GET /api/authors/{}", id);
         return ResponseEntity.ok(authorService.getById(id));
     }
 
@@ -108,7 +106,6 @@ public class AuthorController {
     public ResponseEntity<PageDto<AuthorInfoDto>> searchAuthors(
         @RequestBody @Valid AuthorFilter filter
     ) {
-        log.info("POST /api/authors/_list body={}", filter);
         PageDto<AuthorInfoDto> authors = authorService.search(filter);
         return ResponseEntity.ok(authors);
     }
@@ -137,7 +134,6 @@ public class AuthorController {
         @PathVariable @Min(1) Long id,
         @RequestBody @Validated(Groups.OnUpdate.class) AuthorRequestDto body
     ) {
-        log.info("PUT /api/authors/{} body={}", id, body);
         AuthorDetailsDto genre = authorService.updateById(id, body);
         return ResponseEntity.ok(genre);
     }
@@ -161,7 +157,6 @@ public class AuthorController {
     public ResponseEntity<AuthorDetailsDto> deleteAuthorById(
         @PathVariable @Min(1) Long id
     ) {
-        log.info("DELETE /api/authors/{}", id);
         authorService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

@@ -59,7 +59,6 @@ public class GenreController {
     public ResponseEntity<GenreDetailsDto> getGenreById(
         @PathVariable @Min(1) Long id
     ) {
-        log.info("GET /api/genres/{}", id);
         return ResponseEntity.ok(genreService.getById(id));
     }
 
@@ -88,7 +87,6 @@ public class GenreController {
         @RequestBody @Validated(Groups.OnCreate.class) GenreRequestDto body,
         UriComponentsBuilder uriBuilder
     ) {
-        log.info("POST /api/genres body={}", body);
         GenreDetailsDto created = genreService.create(body);
         URI uri = URIUtil.createLocationUri(uriBuilder, "/api/genres", created.getId());
         return ResponseEntity.created(uri).body(created);
@@ -113,7 +111,6 @@ public class GenreController {
     public ResponseEntity<PageDto<GenreInfoDto>> searchGenres(
         @RequestBody @Valid GenreFilter filter
     ) {
-        log.info("POST /api/genres/_list body={}", filter);
         PageDto<GenreInfoDto> genres = genreService.search(filter);
         return ResponseEntity.ok(genres);
     }
@@ -147,7 +144,6 @@ public class GenreController {
         @PathVariable @Min(1) Long id,
         @RequestBody @Validated(Groups.OnUpdate.class) GenreRequestDto body
     ) {
-        log.info("PUT /api/genres/{} body={}", id, body);
         GenreDetailsDto genre = genreService.updateById(id, body);
         return ResponseEntity.ok(genre);
     }
@@ -171,7 +167,6 @@ public class GenreController {
     public ResponseEntity<?> deleteGenreById(
         @PathVariable @Min(1) Long id
     ) {
-        log.info("DELETE /api/genres/{}", id);
         genreService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

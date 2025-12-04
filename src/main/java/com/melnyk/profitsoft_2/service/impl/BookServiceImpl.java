@@ -1,5 +1,6 @@
 package com.melnyk.profitsoft_2.service.impl;
 
+import com.melnyk.profitsoft_2.config.aspect.LogServiceMethod;
 import com.melnyk.profitsoft_2.config.props.PaginationProps;
 import com.melnyk.profitsoft_2.dto.request.BookRequestDto;
 import com.melnyk.profitsoft_2.dto.request.filter.impl.BookFilter;
@@ -56,24 +57,23 @@ public class BookServiceImpl implements BookService {
     private final ObjectMapper objectMapper;
 
     @Override
+    @LogServiceMethod(logArgs = true)
     public BookDetailsDto create(BookRequestDto body) throws ResourceAlreadyExistsException {
-        log.info("Creating book {}", body);
         Book created = transactionTemplate.execute(status -> createBook(body));
-        log.info("Book created id={}", created.getId());
         return bookMapper.toDetailsDto(created);
     }
 
     @Override
     @Transactional(readOnly = true)
+    @LogServiceMethod(logArgs = true)
     public BookDetailsDto getById(Long id) throws ResourceNotFoundException {
-        log.info("Getting book id={}", id);
         BookDetailsDto dto = bookMapper.toDetailsDto(getByIdOrThrow(id));
-        log.info("Book found id={}", id);
         return dto;
     }
 
     @Override
     @Transactional(readOnly = true)
+    @LogServiceMethod(logArgs = true)
     public Book getByIdOrThrow(Long id) throws ResourceNotFoundException {
         return bookRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("%d not found".formatted(id), id, "Book"));
@@ -81,37 +81,33 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional(readOnly = true)
+    @LogServiceMethod(logArgs = true)
     public PageDto<BookInfoDto> search(BookFilter filter) {
-        log.info("Searching books by filter {}", filter);
         Pageable pageable = PageUtil.pageableFrom(filter, paginationProps);
         Specification<Book> spec = SpecificationFactory.createForBook(filter);
         Page<Book> page = bookRepository.findAll(spec, pageable);
-        log.info("{}", page);
         return new PageDto<>(page.map(bookMapper::toInfoDto));
     }
 
     @Override
+    @LogServiceMethod(logArgs = true)
     public BookDetailsDto updateById(Long id, BookRequestDto body)
         throws ResourceNotFoundException, ResourceAlreadyExistsException {
-        log.info("Updating book id={}", id);
-
         Book updated = transactionTemplate.execute(status -> updateBook(id, body));
-
-        log.info("Updated book id={}", id);
         return bookMapper.toDetailsDto(updated);
     }
 
     @Override
     @Transactional
+    @LogServiceMethod(logArgs = true)
     public void deleteById(Long id) throws ResourceNotFoundException {
-        log.info("Deleting book id={}", id);
         getByIdOrThrow(id);
         bookRepository.deleteById(id);
-        log.info("Deleted book id={}", id);
     }
 
     @Override
     @Transactional(readOnly = true)
+    @LogServiceMethod(logArgs = true)
     public void generateReport(BookFilter filter, HttpServletResponse response) throws IOException {
         String contentDispositionFormat = "attachment; filename=%s";
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
@@ -129,6 +125,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @LogServiceMethod(logArgs = true)
     public UploadResponse uploadFromFile(MultipartFile file) throws IOException {
         UploadResponse response = new UploadResponse();
         List<UploadResponse.FailedItem> failedItems = response.getFailedItems();

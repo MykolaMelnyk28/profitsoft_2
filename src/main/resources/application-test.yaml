@@ -15,3 +15,7 @@ spring:
         order_inserts: true
         order_updates: true
     show-sql: true
+
+logging:
+  level:
+    com.melnyk.profitsoft_2: debug

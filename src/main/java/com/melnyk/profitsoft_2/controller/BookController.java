@@ -72,7 +72,6 @@ public class BookController {
         @RequestBody @Validated(Groups.OnCreate.class) BookRequestDto body,
         UriComponentsBuilder uriBuilder
     ) {
-        log.info("POST /api/books body={}", body);
         BookDetailsDto created = bookService.create(body);
         URI uri = URIUtil.createLocationUri(uriBuilder, "/api/books", created.getId());
         return ResponseEntity.created(uri).body(created);
@@ -102,7 +101,6 @@ public class BookController {
     public ResponseEntity<BookDetailsDto> getBookById(
         @PathVariable @Min(1) Long id
     ) {
-        log.info("GET /api/books/{}", id);
         return ResponseEntity.ok(bookService.getById(id));
     }
 
@@ -125,7 +123,6 @@ public class BookController {
     public ResponseEntity<PageDto<BookInfoDto>> searchBooks(
         @RequestBody @Valid BookFilter filter
     ) {
-        log.info("POST /api/books/_list body={}", filter);
         PageDto<BookInfoDto> page = bookService.search(filter);
         return ResponseEntity.ok(page);
     }
@@ -160,7 +157,6 @@ public class BookController {
         @PathVariable @Min(1) Long id,
         @RequestBody @Validated(Groups.OnUpdate.class) BookRequestDto body
     ) {
-        log.info("PUT /api/books/{} body={}", id, body);
         BookDetailsDto book = bookService.updateById(id, body);
         return ResponseEntity.ok(book);
     }
@@ -186,7 +182,6 @@ public class BookController {
     public ResponseEntity<?> deleteBookById(
         @PathVariable @Min(1) Long id
     ) {
-        log.info("DELETE /api/books/{}", id);
         bookService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
@@ -223,7 +218,6 @@ public class BookController {
         @RequestBody @Valid BookFilter filter,
         HttpServletResponse response
     ) throws IOException {
-        log.info("POST /api/books/_report body={}", filter);
         bookService.generateReport(filter, response);
     }
 
@@ -266,8 +260,6 @@ public class BookController {
         )
         @RequestPart("file") @Valid @JsonFile MultipartFile file
     ) throws IOException {
-
-        log.info("POST /api/books/upload file={}", file.getName());
         UploadResponse response = bookService.uploadFromFile(file);
         return ResponseEntity.ok(response);
     }

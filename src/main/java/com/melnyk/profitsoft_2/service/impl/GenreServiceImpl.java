@@ -1,5 +1,6 @@
 package com.melnyk.profitsoft_2.service.impl;
 
+import com.melnyk.profitsoft_2.config.aspect.LogServiceMethod;
 import com.melnyk.profitsoft_2.config.props.PaginationProps;
 import com.melnyk.profitsoft_2.dto.request.GenreRequestDto;
 import com.melnyk.profitsoft_2.dto.request.filter.impl.GenreFilter;
@@ -38,57 +39,49 @@ public class GenreServiceImpl implements GenreService {
     private final PaginationProps paginationProps;
 
     @Override
+    @LogServiceMethod(logArgs = true)
     public GenreDetailsDto create(GenreRequestDto body) throws ResourceAlreadyExistsException {
-        log.info("Creating genre {}", body);
-
         Genre created = transactionTemplate.execute(status -> createGenre(body));
-
-        log.info("Genre created id={}", created.getId());
         return genreMapper.toDetailsDto(created);
     }
 
     @Transactional(readOnly = true)
     @Override
+    @LogServiceMethod(logArgs = true)
     public GenreDetailsDto getById(Long id) throws ResourceNotFoundException {
-        log.info("Getting genre id={}", id);
         GenreDetailsDto genreDetailsDto = genreMapper.toDetailsDto(getByIdOrThrow(id));
-        log.info("Genre found id={}", id);
         return genreDetailsDto;
     }
 
     @Transactional(readOnly = true)
     @Override
+    @LogServiceMethod(logArgs = true)
     public PageDto<GenreInfoDto> search(GenreFilter filter) {
-        log.info("Searching genres by filter {}", filter);
         Pageable pageable = PageUtil.pageableFrom(filter, paginationProps);
         Specification<Genre> spec = SpecificationFactory.createForGenre(filter);
         Page<Genre> genres = genreRepository.findAll(spec, pageable);
-        log.info("{}", genres);
         return new PageDto<>(genres.map(genreMapper::toInfoDto));
     }
 
     @Override
+    @LogServiceMethod(logArgs = true)
     public GenreDetailsDto updateById(Long id, GenreRequestDto body)
         throws ResourceNotFoundException, ResourceAlreadyExistsException {
-        log.info("Updating genre id={}", id);
-
         Genre updated = transactionTemplate.execute(status -> update(id, body));
-
-        log.info("Updated genre id={}", id);
         return genreMapper.toDetailsDto(updated);
     }
 
     @Transactional
     @Override
+    @LogServiceMethod(logArgs = true)
     public void deleteById(Long id) throws ResourceNotFoundException {
-        log.info("Deleting genre id={}", id);
         getByIdOrThrow(id);
         genreRepository.deleteById(id);
-        log.info("Deleted genre id={}", id);
     }
 
     @Override
     @Transactional(readOnly = true)
+    @LogServiceMethod(logArgs = true)
     public List<Genre> getAllByIds(Collection<Long> ids) {
         if (ids.isEmpty()) {
             return List.of();
@@ -97,6 +90,7 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Transactional(readOnly = true)
+    @LogServiceMethod(logArgs = true)
     public Genre getByIdOrThrow(Long id) throws ResourceNotFoundException {
         return genreRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("%d not found".formatted(id), id, "Genre"));

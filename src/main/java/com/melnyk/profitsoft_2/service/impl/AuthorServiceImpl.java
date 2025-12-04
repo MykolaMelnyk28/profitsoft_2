@@ -1,5 +1,6 @@
 package com.melnyk.profitsoft_2.service.impl;
 
+import com.melnyk.profitsoft_2.config.aspect.LogServiceMethod;
 import com.melnyk.profitsoft_2.config.props.PaginationProps;
 import com.melnyk.profitsoft_2.dto.request.AuthorRequestDto;
 import com.melnyk.profitsoft_2.dto.request.filter.impl.AuthorFilter;
@@ -34,56 +35,48 @@ public class AuthorServiceImpl implements AuthorService {
     private final TransactionTemplate transactionTemplate;
 
     @Override
+    @LogServiceMethod(logArgs = true)
     public AuthorDetailsDto create(AuthorRequestDto body) throws ResourceAlreadyExistsException {
-        log.info("Creating author {}", body);
-
         Author created = transactionTemplate.execute(status -> createAuthor(body));
-
-        log.info("Author created id={}", created.getId());
         return authorMapper.toDetailsDto(created);
     }
 
     @Override
     @Transactional(readOnly = true)
+    @LogServiceMethod(logArgs = true)
     public AuthorDetailsDto getById(Long id) throws ResourceNotFoundException {
-        log.info("Getting author id={}", id);
         AuthorDetailsDto authorDetailsDto = authorMapper.toDetailsDto(getByIdOrThrow(id));
-        log.info("Author found id={}", id);
         return authorDetailsDto;
     }
 
     @Override
     @Transactional(readOnly = true)
+    @LogServiceMethod(logArgs = true)
     public PageDto<AuthorInfoDto> search(AuthorFilter filter) {
-        log.info("Searching authors by filter {}", filter);
         Pageable pageable = PageUtil.pageableFrom(filter, paginationProps);
         Specification<Author> spec = SpecificationFactory.createForAuthor(filter);
         Page<Author> page = authorRepository.findAll(spec, pageable);
-        log.info("{}", page);
         return new PageDto<>(page.map(authorMapper::toInfoDto));
     }
 
     @Override
+    @LogServiceMethod(logArgs = true)
     public AuthorDetailsDto updateById(Long id, AuthorRequestDto body)
         throws ResourceNotFoundException, ResourceAlreadyExistsException {
-        log.info("Updating author id={}", id);
-
         Author updated = transactionTemplate.execute(status -> updateAuthor(id, body));
-
-        log.info("Updated author id={}", id);
         return authorMapper.toDetailsDto(updated);
     }
 
     @Override
     @Transactional
+    @LogServiceMethod(logArgs = true)
     public void deleteById(Long id) throws ResourceNotFoundException {
-        log.info("Deleting author id={}", id);
         getByIdOrThrow(id);
         authorRepository.deleteById(id);
-        log.info("Deleted author id={}", id);
     }
 
     @Transactional(readOnly = true)
+    @LogServiceMethod(logArgs = true)
     public Author getByIdOrThrow(Long id) throws ResourceNotFoundException {
         return authorRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("%d not found".formatted(id), id, "Author"));
