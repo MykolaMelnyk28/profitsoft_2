@@ -5,6 +5,7 @@ spring:
     url: ${DB_URL}
     driver-class-name: 'org.postgresql.Driver'
   jpa:
+    open-in-view: false
     hibernate:
       ddl-auto: validate
     properties:
