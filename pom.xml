@@ -23,6 +23,8 @@
         <springdoc.openapi.version>2.7.0</springdoc.openapi.version>
         <h2.version>2.3.232</h2.version>
         <mapstruct.version>1.6.3</mapstruct.version>
+        <poi.version>5.2.5</poi.version>
+        <zonky.embedded.postgres.version>2.2.0</zonky.embedded.postgres.version>
         <zonky.embedded-database-spring-test.version>2.7.1</zonky.embedded-database-spring-test.version>
     </properties>
 
@@ -79,6 +81,18 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- POI for excel -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
+
         <!--Tests-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -110,6 +124,12 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>${h2.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>1.0.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
