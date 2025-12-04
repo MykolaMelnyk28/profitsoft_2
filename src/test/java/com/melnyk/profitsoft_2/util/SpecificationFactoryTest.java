@@ -8,7 +8,7 @@ import jakarta.persistence.criteria.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -43,7 +43,7 @@ class SpecificationFactoryTest {
 
     @Test
     void createForGenre_withStartCreatedAt_returnsPredicate() {
-        LocalDateTime time = LocalDateTime.now();
+        Instant time = Instant.now();
         GenreFilter filter = new GenreFilter(null, null, null, null, time, null, null, null);
 
         Specification<Genre> spec = SpecificationFactory.createForGenre(filter);
@@ -56,7 +56,7 @@ class SpecificationFactoryTest {
 
     @Test
     void createForGenre_withEndCreatedAt_returnsPredicate() {
-        LocalDateTime time = LocalDateTime.now();
+        Instant time = Instant.now();
         GenreFilter filter = new GenreFilter(null, null, null, null, null, time, null, null);
 
         Specification<Genre> spec = SpecificationFactory.createForGenre(filter);
@@ -69,7 +69,7 @@ class SpecificationFactoryTest {
 
     @Test
     void createForGenre_withStartUpdatedAt_returnsPredicate() {
-        LocalDateTime time = LocalDateTime.now();
+        Instant time = Instant.now();
         GenreFilter filter = new GenreFilter(null, null, null, null, null, null, time, null);
 
         Specification<Genre> spec = SpecificationFactory.createForGenre(filter);
@@ -82,7 +82,7 @@ class SpecificationFactoryTest {
 
     @Test
     void createForGenre_withEndUpdatedAt_returnsPredicate() {
-        LocalDateTime time = LocalDateTime.now();
+        Instant time = Instant.now();
         GenreFilter filter = new GenreFilter(null, null, null, null, null, null, null, time);
 
         Specification<Genre> spec = SpecificationFactory.createForGenre(filter);
@@ -126,7 +126,7 @@ class SpecificationFactoryTest {
 
     @Test
     void createForAuthor_withStartCreatedAt_returnsPredicate() {
-        LocalDateTime time = LocalDateTime.now();
+        Instant time = Instant.now();
         AuthorFilter filter = new AuthorFilter(null, null, null, null, null, time, null, null, null);
 
         Specification<Author> spec = SpecificationFactory.createForAuthor(filter);
@@ -139,7 +139,7 @@ class SpecificationFactoryTest {
 
     @Test
     void createForAuthor_withEndCreatedAt_returnsPredicate() {
-        LocalDateTime time = LocalDateTime.now();
+        Instant time = Instant.now();
         AuthorFilter filter = new AuthorFilter(null, null, null, null, null, null, time, null, null);
 
         Specification<Author> spec = SpecificationFactory.createForAuthor(filter);
@@ -152,7 +152,7 @@ class SpecificationFactoryTest {
 
     @Test
     void createForAuthor_withStartUpdatedAt_returnsPredicate() {
-        LocalDateTime time = LocalDateTime.now();
+        Instant time = Instant.now();
         AuthorFilter filter = new AuthorFilter(null, null, null, null, null, null, null, time, null);
 
         Specification<Author> spec = SpecificationFactory.createForAuthor(filter);
@@ -165,7 +165,7 @@ class SpecificationFactoryTest {
 
     @Test
     void createForAuthor_withEndUpdatedAt_returnsPredicate() {
-        LocalDateTime time = LocalDateTime.now();
+        Instant time = Instant.now();
         AuthorFilter filter = new AuthorFilter(null, null, null, null, null, null, null, null, time);
 
         Specification<Author> spec = SpecificationFactory.createForAuthor(filter);
@@ -201,13 +201,13 @@ class SpecificationFactoryTest {
         CriteriaQuery<?> query,
         CriteriaBuilder cb,
         String fieldName,
-        LocalDateTime expectedTime,
+        Instant expectedTime,
         boolean isStart
     ) {
-        Path<LocalDateTime> path = (Path<LocalDateTime>) mock(Path.class);
+        Path<Instant> path = (Path<Instant>) mock(Path.class);
         Predicate predicate = mock(Predicate.class);
 
-        when(root.<LocalDateTime>get(fieldName)).thenReturn(path);
+        when(root.<Instant>get(fieldName)).thenReturn(path);
 
         if (isStart) {
             when(cb.greaterThanOrEqualTo(path, expectedTime)).thenReturn(predicate);

@@ -25,7 +25,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,7 +52,7 @@ class AuthorServiceImplTest {
     @InjectMocks
     AuthorServiceImpl authorService;
 
-    final LocalDateTime FIXED_CREATED_AT = LocalDateTime.now();
+    final Instant FIXED_CREATED_AT = Instant.now();
 
     @Test
     void create_whenValidRequest_thenReturnsCreatedDto() {

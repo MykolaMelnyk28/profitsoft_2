@@ -43,6 +43,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -91,18 +93,18 @@ class BookControllerIT {
     @Autowired
     AuthorMapper authorMapper;
 
-    boolean isInitialized = false;
+    Instant initializedTime;
 
     @BeforeAll
     @Transactional
     void beforeEach() {
-        if (!isInitialized) {
+        if (initializedTime == null) {
+            initializedTime = Instant.now();
             DataUtil.saveDefaultGenres(objectMapper, genreRepository).forEach(x -> GENRES.put(x.getId(), x));
             DataUtil.saveDefaultAuthors(objectMapper, authorRepository).forEach(x -> AUTHORS.put(x.getId(), x));
         }
         DataUtil.saveDefaultBooks(objectMapper, bookRepository, authorRepository, genreRepository)
             .forEach(x -> BOOKS.put(x.getId(), x));
-        isInitialized = true;
     }
 
     // getBookById
@@ -114,10 +116,22 @@ class BookControllerIT {
         Book foundBook = BOOKS.get(id);
         BookDetailsDto expectedResponseBody = bookMapper.toDetailsDto(foundBook);
 
-        mockMvc.perform(get("/api/books/{id}", id))
+        String jsonResponse = mockMvc.perform(get("/api/books/{id}", id))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(content().json(objectMapper.writeValueAsString(expectedResponseBody)));
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        BookDetailsDto responseBody = objectMapper.readValue(jsonResponse, BookDetailsDto.class);
+
+        assertThat(responseBody)
+            .usingRecursiveComparison()
+            .ignoringFields("createdAt", "updatedAt")
+            .isEqualTo(expectedResponseBody);
+
+        assertThat(responseBody.getCreatedAt()).isAfterOrEqualTo(initializedTime);
+        assertThat(responseBody.getUpdatedAt()).isAfterOrEqualTo(initializedTime);
     }
 
     @Test
@@ -149,6 +163,7 @@ class BookControllerIT {
             genreIds
         );
 
+        Instant preRequestTime = Instant.now();
         String jsonResponse = mockMvc.perform(post("/api/books")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(requestBody)))
@@ -168,6 +183,9 @@ class BookControllerIT {
 
         Book saved = bookRepository.findById(response.getId()).orElseThrow();
         assertThat(saved.getTitle()).isEqualTo("newBook");
+
+        assertThat(response.getCreatedAt()).isAfterOrEqualTo(preRequestTime);
+        assertThat(response.getUpdatedAt()).isAfterOrEqualTo(preRequestTime);
     }
 
     @Test

@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
+import java.time.Instant;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -62,9 +63,12 @@ class GenreControllerIT {
     @Autowired
     GenreMapper genreMapper;
 
+    Instant initializedTime;
+
     @BeforeAll
     @Transactional
     void beforeEach() {
+        initializedTime = Instant.now();
         DataUtil.saveDefaultGenres(objectMapper, genreRepository).forEach(x -> GENRES.put(x.getId(), x));
     }
 
@@ -77,10 +81,22 @@ class GenreControllerIT {
         Genre foundGenre = GENRES.get(id);
         GenreDetailsDto expectedResponseBody = genreMapper.toDetailsDto(foundGenre);
 
-        mockMvc.perform(get("/api/genres/{id}", id))
+        String jsonResponse = mockMvc.perform(get("/api/genres/{id}", id))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(content().json(objectMapper.writeValueAsString(expectedResponseBody)));
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        GenreDetailsDto responseBody = objectMapper.readValue(jsonResponse, GenreDetailsDto.class);
+
+        assertThat(responseBody)
+            .usingRecursiveComparison()
+            .ignoringFields("createdAt", "updatedAt")
+            .isEqualTo(expectedResponseBody);
+
+        assertThat(responseBody.getCreatedAt()).isAfterOrEqualTo(initializedTime);
+        assertThat(responseBody.getUpdatedAt()).isAfterOrEqualTo(initializedTime);
     }
 
     @Test

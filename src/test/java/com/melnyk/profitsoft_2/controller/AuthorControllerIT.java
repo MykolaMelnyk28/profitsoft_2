@@ -6,12 +6,14 @@ import com.melnyk.profitsoft_2.dto.request.AuthorRequestDto;
 import com.melnyk.profitsoft_2.dto.request.filter.impl.AuthorFilter;
 import com.melnyk.profitsoft_2.dto.response.AuthorDetailsDto;
 import com.melnyk.profitsoft_2.dto.response.AuthorInfoDto;
+import com.melnyk.profitsoft_2.dto.response.BookDetailsDto;
 import com.melnyk.profitsoft_2.dto.response.PageDto;
 import com.melnyk.profitsoft_2.entity.Author;
 import com.melnyk.profitsoft_2.mapper.AuthorMapper;
 import com.melnyk.profitsoft_2.repository.AuthorRepository;
 import com.melnyk.profitsoft_2.util.DataUtil;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -27,6 +29,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
+import java.time.Instant;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -62,9 +65,12 @@ class AuthorControllerIT {
     @Autowired
     AuthorMapper authorMapper;
 
+    Instant initializedTime;
+
     @BeforeAll
     @Transactional
     void beforeEach() {
+        initializedTime = Instant.now();
         DataUtil.saveDefaultAuthors(objectMapper, authorRepository).forEach(x -> AUTHORS.put(x.getId(), x));
     }
 
@@ -77,10 +83,22 @@ class AuthorControllerIT {
         Author foundAuthor = AUTHORS.get(id);
         AuthorDetailsDto expectedResponseBody = authorMapper.toDetailsDto(foundAuthor);
 
-        mockMvc.perform(get("/api/authors/{id}", id))
+        String jsonResponse = mockMvc.perform(get("/api/authors/{id}", id))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(content().json(objectMapper.writeValueAsString(expectedResponseBody)));
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        AuthorDetailsDto responseBody = objectMapper.readValue(jsonResponse, AuthorDetailsDto.class);
+
+        assertThat(responseBody)
+            .usingRecursiveComparison()
+            .ignoringFields("createdAt", "updatedAt")
+            .isEqualTo(expectedResponseBody);
+
+        assertThat(responseBody.getCreatedAt()).isAfterOrEqualTo(initializedTime);
+        assertThat(responseBody.getUpdatedAt()).isAfterOrEqualTo(initializedTime);
     }
 
     @Test

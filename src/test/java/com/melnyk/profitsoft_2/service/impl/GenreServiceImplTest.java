@@ -1,9 +1,9 @@
 package com.melnyk.profitsoft_2.service.impl;
 
 import com.melnyk.profitsoft_2.config.props.PaginationProps;
-import com.melnyk.profitsoft_2.dto.request.filter.impl.GenreFilter;
 import com.melnyk.profitsoft_2.dto.request.GenreRequestDto;
 import com.melnyk.profitsoft_2.dto.request.filter.PageFilter;
+import com.melnyk.profitsoft_2.dto.request.filter.impl.GenreFilter;
 import com.melnyk.profitsoft_2.dto.response.GenreDetailsDto;
 import com.melnyk.profitsoft_2.dto.response.GenreInfoDto;
 import com.melnyk.profitsoft_2.dto.response.PageDto;
@@ -26,7 +26,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,7 +52,7 @@ class GenreServiceImplTest {
     @InjectMocks
     GenreServiceImpl genreService;
 
-    final LocalDateTime FIXED_CREATED_AT = LocalDateTime.now();
+    final Instant FIXED_CREATED_AT = Instant.now();
 
     @Test
     void create_whenValidRequest_thenReturnsCreatedDto() {
