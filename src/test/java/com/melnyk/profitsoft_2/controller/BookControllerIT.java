@@ -27,6 +27,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -43,7 +44,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -93,6 +93,9 @@ class BookControllerIT {
     @Autowired
     AuthorMapper authorMapper;
 
+    @Autowired
+    CacheManager cacheManager;
+
     Instant initializedTime;
 
     @BeforeAll
@@ -105,6 +108,9 @@ class BookControllerIT {
         }
         DataUtil.saveDefaultBooks(objectMapper, bookRepository, authorRepository, genreRepository)
             .forEach(x -> BOOKS.put(x.getId(), x));
+        for(String name : cacheManager.getCacheNames()) {
+            cacheManager.getCache(name).clear();
+        }
     }
 
     // getBookById

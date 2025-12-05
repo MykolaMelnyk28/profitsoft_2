@@ -1,25 +1,26 @@
 package com.melnyk.profitsoft_2.controller;
 
 import com.melnyk.profitsoft_2.Profitsoft2Application;
+import com.melnyk.profitsoft_2.config.CacheConfig;
 import com.melnyk.profitsoft_2.config.TestConfig;
 import com.melnyk.profitsoft_2.dto.request.AuthorRequestDto;
 import com.melnyk.profitsoft_2.dto.request.filter.impl.AuthorFilter;
 import com.melnyk.profitsoft_2.dto.response.AuthorDetailsDto;
 import com.melnyk.profitsoft_2.dto.response.AuthorInfoDto;
-import com.melnyk.profitsoft_2.dto.response.BookDetailsDto;
 import com.melnyk.profitsoft_2.dto.response.PageDto;
 import com.melnyk.profitsoft_2.entity.Author;
 import com.melnyk.profitsoft_2.mapper.AuthorMapper;
 import com.melnyk.profitsoft_2.repository.AuthorRepository;
 import com.melnyk.profitsoft_2.util.DataUtil;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -30,10 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -65,6 +63,9 @@ class AuthorControllerIT {
     @Autowired
     AuthorMapper authorMapper;
 
+    @Autowired
+    CacheManager cacheManager;
+
     Instant initializedTime;
 
     @BeforeAll
@@ -72,6 +73,8 @@ class AuthorControllerIT {
     void beforeEach() {
         initializedTime = Instant.now();
         DataUtil.saveDefaultAuthors(objectMapper, authorRepository).forEach(x -> AUTHORS.put(x.getId(), x));
+        Optional.ofNullable(cacheManager.getCache(CacheConfig.AUTHOR_CACHE_NAME))
+            .ifPresent(Cache::clear);
     }
 
     // getAuthorById

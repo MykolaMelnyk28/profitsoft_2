@@ -1,5 +1,6 @@
 package com.melnyk.profitsoft_2.service.impl;
 
+import com.melnyk.profitsoft_2.config.CacheConfig;
 import com.melnyk.profitsoft_2.config.aspect.LogServiceMethod;
 import com.melnyk.profitsoft_2.config.props.PaginationProps;
 import com.melnyk.profitsoft_2.dto.request.BookRequestDto;
@@ -23,6 +24,8 @@ import com.melnyk.profitsoft_2.util.SpecificationFactory;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -55,20 +58,31 @@ public class BookServiceImpl implements BookService {
     private final PaginationProps paginationProps;
     private final ReportService<BookInfoDto> bookExcelReportService;
     private final ObjectMapper objectMapper;
+    private final CacheManager cacheManager;
 
     @Override
     @LogServiceMethod(logArgs = true)
     public BookDetailsDto create(BookRequestDto body) throws ResourceAlreadyExistsException {
         Book created = transactionTemplate.execute(status -> createBook(body));
-        return bookMapper.toDetailsDto(created);
+        BookDetailsDto dto = bookMapper.toDetailsDto(created);
+
+        getCache().ifPresent(cache -> cache.put(dto.getId(), dto));
+
+        return dto;
     }
 
     @Override
     @Transactional(readOnly = true)
     @LogServiceMethod(logArgs = true)
     public BookDetailsDto getById(Long id) throws ResourceNotFoundException {
-        BookDetailsDto dto = bookMapper.toDetailsDto(getByIdOrThrow(id));
-        return dto;
+        Optional<Cache> cacheOpt = getCache();
+        return cacheOpt
+            .map(cache -> cache.get(id, BookDetailsDto.class))
+            .orElseGet(() -> {
+                BookDetailsDto dto = bookMapper.toDetailsDto(getByIdOrThrow(id));
+                cacheOpt.ifPresent(cache -> cache.put(id, dto));
+                return dto;
+            });
     }
 
     @Override
@@ -94,7 +108,11 @@ public class BookServiceImpl implements BookService {
     public BookDetailsDto updateById(Long id, BookRequestDto body)
         throws ResourceNotFoundException, ResourceAlreadyExistsException {
         Book updated = transactionTemplate.execute(status -> updateBook(id, body));
-        return bookMapper.toDetailsDto(updated);
+        BookDetailsDto dto = bookMapper.toDetailsDto(updated);
+
+        getCache().ifPresent(cache -> cache.put(dto.getId(), dto));
+
+        return dto;
     }
 
     @Override
@@ -103,6 +121,7 @@ public class BookServiceImpl implements BookService {
     public void deleteById(Long id) throws ResourceNotFoundException {
         getByIdOrThrow(id);
         bookRepository.deleteById(id);
+        getCache().ifPresent(cache -> cache.evictIfPresent(id));
     }
 
     @Override
@@ -154,7 +173,7 @@ public class BookServiceImpl implements BookService {
                 checkUniqueFieldsOrThrow(currentDto);
                 Book book = bookMapper.toEntity(currentDto);
                 book.setAuthor(authorService.getByIdOrThrow(currentDto.authorId()));
-                book.getGenres().addAll(getGenresByIds(currentDto.genreIds()));
+                book.getGenres().addAll(genreService.getAllByIds(currentDto.genreIds()));
 
                 batchToSave.add(book);
 
@@ -191,7 +210,7 @@ public class BookServiceImpl implements BookService {
         checkUniqueFieldsOrThrow(body);
         Book book = bookMapper.toEntity(body);
         book.setAuthor(authorService.getByIdOrThrow(body.authorId()));
-        book.getGenres().addAll(getGenresByIds(body.genreIds()));
+        book.getGenres().addAll(genreService.getAllByIds(body.genreIds()));
         return bookRepository.save(book);
     }
 
@@ -230,7 +249,7 @@ public class BookServiceImpl implements BookService {
         Set<Long> existingGenreIds = genres.stream().map(Genre::getId).collect(Collectors.toSet());
         if (!existingGenreIds.equals(body.genreIds())) {
             genres.clear();
-            genres.addAll(getGenresByIds(body.genreIds()));
+            genres.addAll(genreService.getAllByIds(body.genreIds()));
             isUpdated = true;
         }
 
@@ -251,26 +270,9 @@ public class BookServiceImpl implements BookService {
         }
     }
 
-    @Transactional(readOnly = true)
-    private List<Genre> getGenresByIds(Set<Long> ids) {
-        if (ids.isEmpty()) {
-            return List.of();
-        }
-        List<Genre> foundGenres = genreService.getAllByIds(ids);
-
-        Set<Long> foundIds = foundGenres.stream()
-            .map(Genre::getId)
-            .collect(Collectors.toSet());
-
-        List<Long> missingIds = ids.stream()
-            .filter(id -> !foundIds.contains(id))
-            .toList();
-
-        if (!missingIds.isEmpty()) {
-            throw new ResourceNotFoundException("Genres not found", missingIds, "Genre");
-        }
-
-        return foundGenres;
+    private Optional<Cache> getCache() {
+        return Optional.ofNullable(cacheManager)
+            .map(x -> x.getCache(CacheConfig.BOOK_CACHE_NAME));
     }
 
 }

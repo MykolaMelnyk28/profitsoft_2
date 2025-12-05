@@ -1,6 +1,7 @@
 package com.melnyk.profitsoft_2.controller;
 
 import com.melnyk.profitsoft_2.Profitsoft2Application;
+import com.melnyk.profitsoft_2.config.CacheConfig;
 import com.melnyk.profitsoft_2.config.TestConfig;
 import com.melnyk.profitsoft_2.dto.request.GenreRequestDto;
 import com.melnyk.profitsoft_2.dto.request.filter.impl.GenreFilter;
@@ -18,20 +19,21 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.shaded.org.checkerframework.checker.units.qual.A;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -63,13 +65,18 @@ class GenreControllerIT {
     @Autowired
     GenreMapper genreMapper;
 
+    @Autowired
+    CacheManager cacheManager;
+
     Instant initializedTime;
 
     @BeforeAll
     @Transactional
-    void beforeEach() {
+    void beforeAll() {
         initializedTime = Instant.now();
         DataUtil.saveDefaultGenres(objectMapper, genreRepository).forEach(x -> GENRES.put(x.getId(), x));
+        Optional.ofNullable(cacheManager.getCache(CacheConfig.GENRE_CACHE_NAME))
+            .ifPresent(Cache::clear);
     }
 
     // getGenreById
