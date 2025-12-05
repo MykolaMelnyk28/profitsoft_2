@@ -93,7 +93,7 @@ public class AuthorServiceImpl implements AuthorService {
                 opt.ifPresent(a -> cacheOpt.ifPresent(cache -> cache.put(id, a)));
                 return opt;
             })
-            .orElseThrow(() -> new ResourceNotFoundException("%d not found".formatted(id), id, "Author"));
+            .orElseThrow(() -> new ResourceNotFoundException("Author %d not found".formatted(id), id, "Author"));
     }
 
     private Author createAuthor(AuthorRequestDto body) {

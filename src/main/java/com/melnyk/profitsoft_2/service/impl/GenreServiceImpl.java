@@ -119,7 +119,7 @@ public class GenreServiceImpl implements GenreService {
                 Genre genre = foundMap.get(id);
 
                 if (genre == null) {
-                    throw new ResourceNotFoundException("%d not found".formatted(id), id, "Genre");
+                    throw new ResourceNotFoundException("Genre %d not found".formatted(id), id, "Genre");
                 }
 
                 genreMap.put(id, genre);
@@ -144,7 +144,7 @@ public class GenreServiceImpl implements GenreService {
                 opt.ifPresent(g -> cacheOpt.ifPresent(cache -> cache.put(id, g)));
                 return opt;
             })
-            .orElseThrow(() -> new ResourceNotFoundException("%d not found".formatted(id), id, "Genre"));
+            .orElseThrow(() -> new ResourceNotFoundException("Genre %d not found".formatted(id), id, "Genre"));
     }
 
     private Genre createGenre(GenreRequestDto body) {

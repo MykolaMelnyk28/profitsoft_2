@@ -90,7 +90,7 @@ public class BookServiceImpl implements BookService {
     @LogServiceMethod(logArgs = true)
     public Book getByIdOrThrow(Long id) throws ResourceNotFoundException {
         return bookRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("%d not found".formatted(id), id, "Book"));
+            .orElseThrow(() -> new ResourceNotFoundException("Book %d not found".formatted(id), id, "Book"));
     }
 
     @Override
