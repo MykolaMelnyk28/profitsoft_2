@@ -16,6 +16,12 @@ spring:
         order_updates: true
     show-sql: true
 
+cors:
+  allowed:
+    origins: '*'
+    methods: GET,POST,PUT,DELETE
+    credentials: true
+
 logging:
   level:
     com.melnyk.profitsoft_2: debug
