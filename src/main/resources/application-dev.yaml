@@ -1,3 +1,12 @@
+server:
+  ssl:
+    enabled: true
+    key-store: ${SERVER_SSL_KEYSTORE_PATH:classpath:httpsKey.p12}
+    key-store-password: ${SERVER_SSL_KEY_STORE_PASSWORD:4718da7d57e62178e0605b08cfd69428957a5128ee5ef7b5ff9e76b7db6520df}
+    key-password: ${SERVER_SSL_KEY_PASSWORD:4718da7d57e62178e0605b08cfd69428957a5128ee5ef7b5ff9e76b7db6520df}
+    key-store-type: ${SERVER_SSL_KEY_STORE_TYPE:PKCS12}
+    key-alias: ${SERVER_SSL_KEY_ALIAS:httpsKey}
+
 spring:
   datasource:
     username: ${DB_USERNAME:postgres}
@@ -19,8 +28,6 @@ spring:
 cors:
   allowed:
     origins: '*'
-    methods: GET,POST,PUT,DELETE
-    credentials: true
 
 logging:
   level:
