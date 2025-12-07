@@ -46,6 +46,18 @@
 
 ## Running
 
+### 0. Run tests
+
+To run only unit tests:
+```bash
+mvn test
+```
+
+To run all tests, includes integration tests (requires Docker)
+```bash
+mvn verify
+```
+
 ### 1. Create a `postgres.env` file in the project root:
 
 This file is used by the PostgreSQL Docker container (if using Docker)
@@ -97,3 +109,11 @@ docker-compose up -d book-api-app
 - API base url: `https://localhost:8080`
 - Health endpoint: `https://localhost:8080/actuator/health`
 - Swagger page: `https://localhost:8080/swagger-ui/index.html`
+
+---
+
+## Upload books
+
+For upload use `data/upload.json` file. 
+
+> `data/upload.json` file assumes that you have already created 4 authors with ids 1,2,3,4 and created 5 genres with ids 1,2,3,4,5
