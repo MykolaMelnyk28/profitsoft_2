@@ -15,9 +15,18 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Factory class for creating JPA {@link org.springframework.data.jpa.domain.Specification}
+ * instances for various entities such as {@link Genre}, {@link Author}, and {@link Book}.
+ */
 public final class SpecificationFactory {
     private SpecificationFactory() {}
 
+    /**
+     * Creates {@link org.springframework.data.jpa.domain.Specification} for {@link Genre}
+     * @param filter filter data object
+     * @return {@link org.springframework.data.jpa.domain.Specification} instance
+     */
     public static Specification<Genre> createForGenre(GenreFilter filter) {
         return (root, query, cb) -> {
             if (filter == null) {
@@ -36,6 +45,11 @@ public final class SpecificationFactory {
         };
     }
 
+    /**
+     * Creates {@link org.springframework.data.jpa.domain.Specification} for {@link Author}
+     * @param filter filter data object
+     * @return {@link org.springframework.data.jpa.domain.Specification} instance
+     */
     public static Specification<Author> createForAuthor(AuthorFilter filter) {
         return (root, query, cb) -> {
             if (filter == null) {
@@ -58,6 +72,11 @@ public final class SpecificationFactory {
         };
     }
 
+    /**
+     * Creates {@link org.springframework.data.jpa.domain.Specification} for {@link Book}
+     * @param filter filter data object
+     * @return {@link org.springframework.data.jpa.domain.Specification} instance
+     */
     public static Specification<Book> createForBook(BookFilter filter) {
         return (root, query, cb) -> {
             if (filter == null) {
@@ -108,18 +127,30 @@ public final class SpecificationFactory {
         };
     }
 
+    /**
+     * Creates a case-insensitive LIKE predicate for a string field.
+     */
     private static Predicate useLikeIgnoreCase(Root<?> root, CriteriaBuilder cb, String name, String likeExpression) {
         return cb.like(cb.lower(root.get(name)), likeExpression.toLowerCase());
     }
 
+    /**
+     * Creates a greater-than-or-equal-to predicate for an integer field.
+     */
     private static Predicate useMinInt(Root<?> root, CriteriaBuilder cb, String name, Integer value) {
         return cb.greaterThanOrEqualTo(root.get(name), value);
     }
 
+    /**
+        * Creates a less-than-or-equal-to predicate for an integer field.
+     */
     private static Predicate useMaxInt(Root<?> root, CriteriaBuilder cb, String name, Integer value) {
         return cb.lessThanOrEqualTo(root.get(name), value);
     }
 
+    /**
+     * Creates predicates for filtering by creation timestamps.
+     */
     private static <T> List<Predicate> useCreationFilter(Root<T> root, CriteriaBuilder cb, CreationFilter filter) {
         List<Predicate> predicates = new ArrayList<>();
         if (filter.startCreatedAt() != null) {
@@ -135,6 +166,9 @@ public final class SpecificationFactory {
         return predicates;
     }
 
+    /**
+     * Creates predicates for filtering by update timestamps.
+     */
     private static <T> List<Predicate> useUpdatedFilter(Root<T> root, CriteriaBuilder cb, UpdatedFilter filter) {
         List<Predicate> predicates = new ArrayList<>();
         if (filter.startUpdatedAt() != null) {

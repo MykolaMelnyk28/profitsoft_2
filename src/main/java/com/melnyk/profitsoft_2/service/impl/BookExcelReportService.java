@@ -2,6 +2,7 @@ package com.melnyk.profitsoft_2.service.impl;
 
 import com.melnyk.profitsoft_2.dto.response.BookInfoDto;
 import com.melnyk.profitsoft_2.dto.response.GenreInfoDto;
+import com.melnyk.profitsoft_2.entity.Book;
 import com.melnyk.profitsoft_2.service.ExcelReportService;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -13,6 +14,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Excel report for {@link Book} entities in {@link BookInfoDto} view.
+ *
+ * <p>Defines the sheet name, header columns, and how each item is written
+ * into a row. Excel creation and streaming are handled by the base class.</p>
+ */
 @Service
 public class BookExcelReportService extends ExcelReportService<BookInfoDto> {
 

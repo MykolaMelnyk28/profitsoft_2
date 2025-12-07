@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
+/**
+ * Aspect for logging service method calls annotated with {@link LogServiceMethod}.
+ */
 @Component
 @Aspect
 @Slf4j

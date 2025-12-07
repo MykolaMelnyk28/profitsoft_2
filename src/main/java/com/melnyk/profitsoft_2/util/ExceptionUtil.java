@@ -10,15 +10,32 @@ import org.springframework.validation.FieldError;
 
 import java.util.stream.Collectors;
 
+/**
+ * Utility class for working with exceptions.
+ *
+ * <p>All methods are static and this class should not be instantiated.
+ */
 public final class ExceptionUtil {
     private ExceptionUtil() {}
 
+    /**
+     * Creates {@link ProblemDetail} object with specify status, title, detail values
+     * @param status http status
+     * @param title title
+     * @param detail detail message
+     * @return created {@link ProblemDetail} object
+     */
     public static ProblemDetail buildProblemDetail(HttpStatus status, String title, String detail) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(status, detail);
         problem.setTitle(title);
         return problem;
     }
 
+    /**
+     * Appends property {@code errors} with validation error messages from {@link BindingResult}
+     * @param problemDetail {@link ProblemDetail} object
+     * @param result validation info object
+     */
     public static void appendErrorsProperty(ProblemDetail problemDetail, BindingResult result) {
         problemDetail.setProperty("errors", result
             .getFieldErrors()
@@ -30,11 +47,22 @@ public final class ExceptionUtil {
         );
     }
 
+    /**
+     * Appends properties {@code resources}, {@code id} from {@link ResourceException}
+     * @param problemDetail {@link ProblemDetail} object
+     * @param re resource exception
+     */
     public static void appendResourceInfo(ProblemDetail problemDetail, ResourceException re) {
         problemDetail.setProperty("resource", re.getResourceName());
         problemDetail.setProperty("id", re.getId());
     }
 
+    /**
+     * Extracts a short, human-readable description of a Jackson-related exception.
+     *
+     * @param ex the thrown exception (typically from Jackson)
+     * @return a concise error message describing the JSON problem
+     */
     public static String extractShortMessage(Exception ex) {
         String description;
         String path = "";

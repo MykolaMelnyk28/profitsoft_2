@@ -8,6 +8,15 @@ import java.io.OutputStream;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Abstract base class for generating Excel reports using Apache POI.
+ *
+ * <p>Implements {@link ReportService} and uses the Template Method pattern:
+ * the report writing workflow is fixed, while subclasses define the sheet,
+ * header structure, and how each item is written into a row.</p>
+ *
+ * @param <T> the type of exported items
+ */
 public abstract class ExcelReportService<T> implements ReportService<T> {
 
     @Override
@@ -26,7 +35,7 @@ public abstract class ExcelReportService<T> implements ReportService<T> {
             }
 
             int rowNum = 1;
-            for(T item : iterable) {
+            for (T item : iterable) {
                 Row row = sheet.createRow(rowNum++);
                 writeElementRow(item, row);
             }

@@ -4,6 +4,9 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
+/**
+ * The dto class that represents a pagination page
+ */
 public record PageDto<T extends InfoDto>(
     List<T> content,
     int page,
