@@ -15,6 +15,7 @@ public class CorsProps {
 
     private List<String> origins;
     private List<String> methods;
+    private List<String> headers;
     private boolean credentials;
 
 }

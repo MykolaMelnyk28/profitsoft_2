@@ -21,6 +21,7 @@ public class WebConfig {
         config.setAllowedOriginPatterns(corsProps.getOrigins());
         config.setAllowedMethods(corsProps.getMethods());
         config.setAllowCredentials(corsProps.isCredentials());
+        config.setAllowedHeaders(corsProps.getHeaders());
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
