@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Field;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,7 +14,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class SortExpressionValidator implements ConstraintValidator<SortExpression, String> {
 
-    private static final Pattern PATTERN = Pattern.compile("(?i)(\\w+)\\s*,\\s*(asc|desc)");
+    private static final Pattern PATTERN = Pattern.compile("(?i)^([\\w\\.]+)\\s*,\\s*(asc|desc)$");
 
     public Class<?> targetType;
 
@@ -34,7 +35,23 @@ public class SortExpressionValidator implements ConstraintValidator<SortExpressi
         }
 
         String property = matcher.group(1);
-        return ReflectionUtils.findFieldIgnoreCase(targetType, property) != null;
+        return matchPropertyPath(targetType, property);
+    }
+
+    private boolean matchPropertyPath(Class<?> clazz, String path) {
+        String[] parts = path.split("\\s*\\.\\s*");
+
+        Class<?> current = clazz;
+
+        for (String part : parts) {
+            Field field = ReflectionUtils.findFieldIgnoreCase(current, part);
+            if (field == null) {
+                return false;
+            }
+
+            current = field.getType();
+        }
+        return true;
     }
 
 }

@@ -83,10 +83,10 @@ public final class SpecificationFactory {
                 return cb.conjunction();
             }
 
-            query.distinct(true);
-
             if (query.getResultType() != Long.class) {
                 root.fetch("author", JoinType.LEFT);
+            } else {
+                query.distinct(true);
             }
 
             final List<Predicate> predicates = new ArrayList<>();
