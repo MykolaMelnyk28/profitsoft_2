@@ -104,11 +104,11 @@ public final class SpecificationFactory {
             }
 
             if (filter.minPages() != null) {
-                predicates.add(useMinInt(root, cb, "pages", filter.minYearPublished()));
+                predicates.add(useMinInt(root, cb, "pages", filter.minPages()));
             }
 
             if (filter.maxPages() != null) {
-                predicates.add(useMaxInt(root, cb, "pages", filter.maxYearPublished()));
+                predicates.add(useMaxInt(root, cb, "pages", filter.maxPages()));
             }
 
             if (filter.authorIds() != null && !filter.authorIds().isEmpty()) {
