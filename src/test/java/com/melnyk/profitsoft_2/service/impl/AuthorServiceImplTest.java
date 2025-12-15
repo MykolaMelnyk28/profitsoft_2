@@ -139,7 +139,7 @@ class AuthorServiceImplTest {
     @Test
     void search_whenFilterIsValid_thenReturnsPagedResult() {
         Pageable pageable = PageRequest.of(0, 10);
-        AuthorFilter filter = new AuthorFilter(null, null, 0, 10, null, null, null, null, null);
+        AuthorFilter filter = new AuthorFilter(null, null, null, 0, 10, null, null, null, null, null);
         Author entity = Author.builder()
             .id(1L)
             .firstName("firstName1")

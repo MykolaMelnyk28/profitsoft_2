@@ -104,7 +104,7 @@ class SpecificationFactoryTest {
     @Test
     @SuppressWarnings("unchecked")
     void createForAuthor_withNameFilter_returnsPredicate() {
-        AuthorFilter filter = new AuthorFilter("firstName1", "lastName1", null, null, null, null, null, null, null);
+        AuthorFilter filter = new AuthorFilter(null, "firstName1", "lastName1", null, null, null, null, null, null, null);
 
         Root<Author> root = (Root<Author>) mock(Root.class);
         CriteriaQuery<?> query = mock(CriteriaQuery.class);
@@ -127,7 +127,7 @@ class SpecificationFactoryTest {
     @Test
     void createForAuthor_withStartCreatedAt_returnsPredicate() {
         Instant time = Instant.now();
-        AuthorFilter filter = new AuthorFilter(null, null, null, null, null, time, null, null, null);
+        AuthorFilter filter = new AuthorFilter(null, null, null, null, null, null, time, null, null, null);
 
         Specification<Author> spec = SpecificationFactory.createForAuthor(filter);
         Root<Author> root = mock(Root.class);
@@ -140,7 +140,7 @@ class SpecificationFactoryTest {
     @Test
     void createForAuthor_withEndCreatedAt_returnsPredicate() {
         Instant time = Instant.now();
-        AuthorFilter filter = new AuthorFilter(null, null, null, null, null, null, time, null, null);
+        AuthorFilter filter = new AuthorFilter(null, null, null, null, null, null, null, time, null, null);
 
         Specification<Author> spec = SpecificationFactory.createForAuthor(filter);
         Root<Author> root = mock(Root.class);
@@ -153,7 +153,7 @@ class SpecificationFactoryTest {
     @Test
     void createForAuthor_withStartUpdatedAt_returnsPredicate() {
         Instant time = Instant.now();
-        AuthorFilter filter = new AuthorFilter(null, null, null, null, null, null, null, time, null);
+        AuthorFilter filter = new AuthorFilter(null, null, null, null, null, null, null, null, time, null);
 
         Specification<Author> spec = SpecificationFactory.createForAuthor(filter);
         Root<Author> root = mock(Root.class);
@@ -166,7 +166,7 @@ class SpecificationFactoryTest {
     @Test
     void createForAuthor_withEndUpdatedAt_returnsPredicate() {
         Instant time = Instant.now();
-        AuthorFilter filter = new AuthorFilter(null, null, null, null, null, null, null, null, time);
+        AuthorFilter filter = new AuthorFilter(null, null, null, null, null, null, null, null, null, time);
 
         Specification<Author> spec = SpecificationFactory.createForAuthor(filter);
         Root<Author> root = mock(Root.class);

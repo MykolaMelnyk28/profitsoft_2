@@ -329,7 +329,7 @@ class GenreControllerIT {
 
         List<GenreInfoDto> expectedGenres = GENRES.values()
             .stream()
-            .filter(x -> x.getName().toLowerCase().contains(filter.name().toLowerCase()))
+            .filter(x -> x.getName().toLowerCase().contains(filter.query().toLowerCase()))
             .skip((long) size * page)
             .limit(size)
             .map(x -> new GenreInfoDto(x.getId(), x.getName()))

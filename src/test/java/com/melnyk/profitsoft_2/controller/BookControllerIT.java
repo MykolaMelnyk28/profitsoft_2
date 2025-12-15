@@ -523,7 +523,7 @@ class BookControllerIT {
 
         List<BookInfoDto> expectedBooks = BOOKS.values()
             .stream()
-            .filter(x -> filter.title() == null || x.getTitle().toLowerCase().contains(filter.title().toLowerCase()))
+            .filter(x -> filter.query() == null || x.getTitle().toLowerCase().contains(filter.query().toLowerCase()))
             .skip((long) size * page)
             .limit(size)
             .map(bookMapper::toInfoDto)
@@ -549,7 +549,7 @@ class BookControllerIT {
     void testGenerationExcelBookReport(BookFilter filter, int expectedTotalElements, Comparator<BookInfoDto> comparator) throws Exception {
         List<BookInfoDto> expectedBooks = BOOKS.values()
             .stream()
-            .filter(x -> filter.title() == null || x.getTitle().toLowerCase().contains(filter.title().toLowerCase()))
+            .filter(x -> filter.query() == null || x.getTitle().toLowerCase().contains(filter.query().toLowerCase()))
             .map(bookMapper::toInfoDto)
             .sorted(comparator)
             .toList();

@@ -34,8 +34,8 @@ public final class SpecificationFactory {
             }
             final List<Predicate> predicates = new ArrayList<>();
 
-            if (filter.name() != null) {
-                predicates.add(useLikeIgnoreCase(root, cb, "name", "%" + filter.name() + "%"));
+            if (filter.query() != null) {
+                predicates.add(useLikeIgnoreCase(root, cb, "name", "%" + filter.query() + "%"));
             }
 
             predicates.addAll(useCreationFilter(root, cb, filter));
@@ -65,6 +65,13 @@ public final class SpecificationFactory {
                 predicates.add(useLikeIgnoreCase(root, cb, "lastName", "%" + filter.lastName() + "%"));
             }
 
+            if (filter.query() != null && !filter.query().isBlank()) {
+                Path<String> firstName = root.get("firstName");
+                Path<String> lastName = root.get("lastName");
+                Expression<String> fullName = cb.concat(firstName, cb.concat(" ", lastName));
+                predicates.add(cb.like(cb.lower(fullName), "%" + filter.query().toLowerCase() + "%"));
+            }
+
             predicates.addAll(useCreationFilter(root, cb, filter));
             predicates.addAll(useUpdatedFilter(root, cb, filter));
 
@@ -91,8 +98,8 @@ public final class SpecificationFactory {
 
             final List<Predicate> predicates = new ArrayList<>();
 
-            if (filter.title() != null) {
-                predicates.add(useLikeIgnoreCase(root, cb, "title", "%" + filter.title() + "%"));
+            if (filter.query() != null) {
+                predicates.add(useLikeIgnoreCase(root, cb, "title", "%" + filter.query() + "%"));
             }
 
             if (filter.minYearPublished() != null) {

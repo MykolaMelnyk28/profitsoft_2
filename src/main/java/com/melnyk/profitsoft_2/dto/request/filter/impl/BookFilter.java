@@ -2,6 +2,7 @@ package com.melnyk.profitsoft_2.dto.request.filter.impl;
 
 import com.melnyk.profitsoft_2.dto.request.filter.CreationFilter;
 import com.melnyk.profitsoft_2.dto.request.filter.PageFilter;
+import com.melnyk.profitsoft_2.dto.request.filter.QueryFilter;
 import com.melnyk.profitsoft_2.dto.request.filter.UpdatedFilter;
 import com.melnyk.profitsoft_2.entity.Book;
 import com.melnyk.profitsoft_2.validaton.SortExpression;
@@ -10,7 +11,7 @@ import java.time.Instant;
 import java.util.Set;
 
 public record BookFilter(
-    String title,
+    String query,
     Integer minYearPublished,
     Integer maxYearPublished,
     Set<Long> authorIds,
@@ -24,4 +25,4 @@ public record BookFilter(
     Instant endCreatedAt,
     Instant startUpdatedAt,
     Instant endUpdatedAt
-) implements PageFilter, CreationFilter, UpdatedFilter { }
+) implements QueryFilter, PageFilter, CreationFilter, UpdatedFilter { }

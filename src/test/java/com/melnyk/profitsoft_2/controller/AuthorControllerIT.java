@@ -200,6 +200,7 @@ class AuthorControllerIT {
     void searchAuthors_givenValidRequestWithFilterValueAndDefaultPagination_returnsAuthorsWith200() throws Exception {
         int expectedTotalElements = 5;
         AuthorFilter filter = new AuthorFilter(
+            null,
             "s",
             "s",
             null,
@@ -219,6 +220,7 @@ class AuthorControllerIT {
     void searchAuthors_givenValidRequestWithFilterValueAndCustomPagination_returnsAuthorsWith200() throws Exception {
         int expectedTotalElements = 5;
         AuthorFilter filter = new AuthorFilter(
+            null,
             "s",
             "s",
             2,
@@ -256,6 +258,7 @@ class AuthorControllerIT {
     void searchAuthors_givenSortParamWithIgnoreCaseValue_returnsAuthorsWith200() throws Exception {
         int expectedTotalElements = 5;
         AuthorFilter filter = new AuthorFilter(
+            null,
             "s",
             "s",
             0,
