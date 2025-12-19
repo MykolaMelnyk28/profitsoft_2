@@ -33,7 +33,7 @@
 | `POST`   | `/api/books/_report` | Search for `Books` using filters and download a generated Excel report |
 | `POST`   | `/api/books/upload`  | Upload a JSON file and create all `Books` from its contents            |
 | `POST`   | `/api/authors/_list` | Search for `Authors` using filters                                     |
-| `GET`    | `/api/authros/{id}`  | Get a `Genre` by its `id`                                              |
+| `GET`    | `/api/authors/{id}`  | Get a `Genre` by its `id`                                              |
 | `POST`   | `/api/authors`       | Create a new `Author`                                                  |
 | `PUT`    | `/api/authors/{id}`  | Update an `Author` by its `id`                                         |
 | `DELETE` | `/api/authors/{id}`  | Delete an `Author` by its `id`                                         |
@@ -117,3 +117,187 @@ docker-compose up -d book-api-app
 For upload use `data/upload.json` file. 
 
 > `data/upload.json` file assumes that you have already created 4 authors with ids 1,2,3,4 and created 5 genres with ids 1,2,3,4,5
+
+## API Examples
+
+### Health endpoint
+```bash
+curl -s -X GET https://localhost:8080/actuator/health | jq
+```
+
+### Create book
+```bash
+curl -s -X POST https://localhost:8080/api/books \
+    -H 'Content-Type: application/json' \
+    -d '{
+	  "title": "book1",
+	  "authorId": 2,
+	  "yearPublished": 2025,
+	  "pages": 501,
+	  "genreIds": [1, 2]
+    }' | jq
+```
+
+### Get a book by id
+```bash
+curl -s -X GET https://localhost:8080/api/books/<ID> | jq
+```
+
+### Search book by filter (each filter field is optional, but exactly filter object body is required)
+```bash
+curl -s -X POST https://localhost:8080/api/books/_list \
+    -H 'Content-Type: application/json' \
+    -d '{
+      "query": "book1",
+      "minYearPublished": 2000,
+      "maxYearPublished": 2025,
+      "authorIds": [1, 2, 3],
+      "minPages": 500,
+      "maxPages": 600,
+      "genreIds": [1, 2],
+      "page": 0,
+      "size": 10,
+      "sort": "title,desc",
+      "startCreatedAt": "2025-12-19T18:35:50.941Z",
+      "endCreatedAt": "2025-12-19T18:35:50.941Z",
+      "startUpdatedAt": "2025-12-19T18:35:50.941Z",
+      "endUpdatedAt": "2025-12-19T18:35:50.941Z"
+    }' | jq
+```
+
+### Update a book by id
+```bash
+curl -s -X PUT https://localhost:8080/api/books/<ID> \
+  -H "Content-Type: application/json" \
+  -d '{
+	  "title": "book1Updated",
+	  "authorId": 2,
+	  "yearPublished": 2025,
+	  "pages": 501,
+	  "genreIds": [3, 4]
+    }' | jq
+```
+
+### Delete book by id
+```bash
+curl -s -X DELETE https://localhost:8080/api/books/<ID> | jq
+```
+
+
+### Generate books Excel Report 
+```bash
+curl -s -X POST https://localhost:8080/api/books/_report \
+  -H "Content-Type: application/json" \
+  -d '{
+      "query": "book1",
+      "minYearPublished": 2000,
+      "maxYearPublished": 2025,
+      "authorIds": [1, 2, 3],
+      "minPages": 500,
+      "maxPages": 600,
+      "genreIds": [1, 2],
+      "page": 0,
+      "size": 10,
+      "sort": "title,desc",
+      "startCreatedAt": "2025-12-19T18:35:50.941Z",
+      "endCreatedAt": "2025-12-19T18:35:50.941Z",
+      "startUpdatedAt": "2025-12-19T18:35:50.941Z",
+      "endUpdatedAt": "2025-12-19T18:35:50.941Z"
+    }' -o books_report.xlsx
+```
+
+### Upload books from JSON File
+```bash
+curl -s -X POST https://localhost:8080/api/books/upload \
+    -H 'Content-Type: multipart/form-data' \
+    -F "file=@data/upload.json;type=application/json" | jq
+```
+
+### Create an author
+```bash
+curl -s -X POST https://localhost:8080/api/authors \
+  -H "Content-Type: application/json" \
+  -d '{
+    "firstName": "Robert",
+    "lastName": "Martin"
+  }' | jq
+```
+
+### Get author by id
+```bash
+curl -s -X GET https://localhost:8080/api/authors/<ID> | jq
+```
+
+### Search authors by filter (each filter field is optional, but exactly filter object body is required)
+```bash
+curl -s -X POST https://localhost:8080/api/authors/_list \
+    -H 'Content-Type: application/json' \
+    -d '{
+      "query": "firstName, lastName",
+      "firstName": "firstName",
+      "lastName": "lastName",
+      "page": 0,
+      "size": 10,
+      "sort": "lastName,desc",
+      "startCreatedAt": "2025-12-19T18:35:50.941Z",
+      "endCreatedAt": "2025-12-19T18:35:50.941Z",
+      "startUpdatedAt": "2025-12-19T18:35:50.941Z",
+      "endUpdatedAt": "2025-12-19T18:35:50.941Z"
+    }' | jq
+```
+
+### Update an author by id
+```bash
+curl -s -X PUT https://localhost:8080/api/authors/<ID> \
+    -H 'Content-Type: application/json' \
+    -d '{
+      "firstName": "Robert",
+      "lastName": "Lison"
+    }' | jq
+```
+
+### Delete an author by id
+```bash
+curl -s -X DELETE https://localhost:8080/api/authors/<ID> | jq
+```
+
+### Create a genre
+```bash
+curl -s -X POST https://localhost:8080/api/genres \
+  -H "Content-Type: application/json" \
+  -d '{ "name": "Fantasy" }' | jq
+```
+
+### Get genre by id
+```bash
+curl -s -X GET https://localhost:8080/api/genres/<ID> | jq
+```
+
+### Search genres by filter (each filter field is optional, but exactly filter object body is required)
+```bash
+curl -s -X POST https://localhost:8080/api/genres/_list \
+    -H 'Content-Type: application/json' \
+    -d '{
+      "query": "Fantasy",
+      "page": 0,
+      "size": 10,
+      "sort": "name,desc",
+      "startCreatedAt": "2025-12-19T18:35:50.941Z",
+      "endCreatedAt": "2025-12-19T18:35:50.941Z",
+      "startUpdatedAt": "2025-12-19T18:35:50.941Z",
+      "endUpdatedAt": "2025-12-19T18:35:50.941Z"
+    }' | jq
+```
+
+### Update a genres by id
+```bash
+curl -s -X PUT https://localhost:8080/api/genres/<ID> \
+    -H 'Content-Type: application/json' \
+    -d '{ "name": "updatedName" }' | jq
+```
+
+### Delete a genres by id
+```bash
+curl -s -X DELETE https://localhost:8080/api/genres/<ID> | jq
+```
+
