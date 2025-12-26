@@ -219,8 +219,18 @@ public class BookServiceImpl implements BookService {
 
         boolean isUpdated = false;
 
+        if (!Objects.equals(body.title(), found.getTitle()) ||
+            !Objects.equals(body.authorId(), found.getAuthor().getId())) {
+            checkUniqueFieldsOrThrow(body);
+        }
+
         if (!Objects.equals(body.title(), found.getTitle())) {
             found.setTitle(body.title());
+            isUpdated = true;
+        }
+
+        if (!Objects.equals(body.authorId(), found.getAuthor().getId())) {
+            found.setAuthor(authorService.getByIdOrThrow(body.authorId()));
             isUpdated = true;
         }
 
@@ -236,12 +246,6 @@ public class BookServiceImpl implements BookService {
 
         if (!Objects.equals(body.pages(), found.getPages())) {
             found.setPages(body.pages());
-            isUpdated = true;
-        }
-
-        if (!Objects.equals(body.authorId(), found.getAuthor().getId())) {
-            checkUniqueFieldsOrThrow(body);
-            found.setAuthor(authorService.getByIdOrThrow(body.authorId()));
             isUpdated = true;
         }
 
