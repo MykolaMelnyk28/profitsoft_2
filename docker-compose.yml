@@ -2,7 +2,7 @@ version: "3"
 
 networks:
   book-api-network:
-    driver: bridge
+    external: true
 
 volumes:
   pg-data:

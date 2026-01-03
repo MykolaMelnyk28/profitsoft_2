@@ -98,7 +98,12 @@ Before starting, make sure you have created the following files:
 - `<project root>/.env`
 - `<project root>/postgres.env`
 
-Run the command:
+1. Create general api network:
+```bash
+docker network create book-api-network
+```
+
+2. Run the command:
 ```bash
 docker-compose up -d book-api-app
 ```

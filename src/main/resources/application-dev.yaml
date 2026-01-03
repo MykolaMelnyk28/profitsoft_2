@@ -1,6 +1,6 @@
 server:
   ssl:
-    enabled: true
+    enabled: ${SERVER_SSL_ENABLED:false}
     key-store: ${SERVER_SSL_KEYSTORE_PATH:classpath:httpsKey.p12}
     key-store-password: ${SERVER_SSL_KEY_STORE_PASSWORD:4718da7d57e62178e0605b08cfd69428957a5128ee5ef7b5ff9e76b7db6520df}
     key-password: ${SERVER_SSL_KEY_PASSWORD:4718da7d57e62178e0605b08cfd69428957a5128ee5ef7b5ff9e76b7db6520df}
