@@ -25,6 +25,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -49,6 +50,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     beanName = "genreDatasource"
 )
 @ActiveProfiles("test")
+@EmbeddedKafka(topics = "${kafka.topics.books}")
 class GenreControllerIT {
 
     static final Map<Long, Genre> GENRES = new HashMap<>();

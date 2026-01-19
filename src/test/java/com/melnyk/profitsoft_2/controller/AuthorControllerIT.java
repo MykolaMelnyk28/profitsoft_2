@@ -24,6 +24,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -47,6 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     beanName = "authorDatasource"
 )
 @ActiveProfiles("test")
+@EmbeddedKafka(topics = "${kafka.topics.books}")
 class AuthorControllerIT {
 
     static final Map<Long, Author> AUTHORS = new HashMap<>();
