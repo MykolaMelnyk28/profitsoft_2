@@ -11,6 +11,7 @@ import com.melnyk.profitsoft_2.dto.response.PageDto;
 import com.melnyk.profitsoft_2.dto.response.UploadResponse;
 import com.melnyk.profitsoft_2.entity.Book;
 import com.melnyk.profitsoft_2.entity.Genre;
+import com.melnyk.profitsoft_2.event.BookEvent;
 import com.melnyk.profitsoft_2.exception.ResourceAlreadyExistsException;
 import com.melnyk.profitsoft_2.exception.ResourceNotFoundException;
 import com.melnyk.profitsoft_2.mapper.BookMapper;
@@ -19,6 +20,7 @@ import com.melnyk.profitsoft_2.service.AuthorService;
 import com.melnyk.profitsoft_2.service.BookService;
 import com.melnyk.profitsoft_2.service.GenreService;
 import com.melnyk.profitsoft_2.service.ReportService;
+import com.melnyk.profitsoft_2.util.BookEventFactory;
 import com.melnyk.profitsoft_2.util.PageUtil;
 import com.melnyk.profitsoft_2.util.SpecificationFactory;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +45,7 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -59,11 +63,16 @@ public class BookServiceImpl implements BookService {
     private final ReportService<BookInfoDto> bookExcelReportService;
     private final ObjectMapper objectMapper;
     private final CacheManager cacheManager;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     @LogServiceMethod(logArgs = true)
     public BookDetailsDto create(BookRequestDto body) throws ResourceAlreadyExistsException {
-        Book created = transactionTemplate.execute(status -> createBook(body));
+        Book created = transactionTemplate.execute(status -> {
+            Book result = createBook(body);
+            sendCreatedEvent(result);
+            return result;
+        });
         BookDetailsDto dto = bookMapper.toDetailsDto(created);
 
         getCache().ifPresent(cache -> cache.put(dto.getId(), dto));
@@ -277,6 +286,13 @@ public class BookServiceImpl implements BookService {
     private Optional<Cache> getCache() {
         return Optional.ofNullable(cacheManager)
             .map(x -> x.getCache(CacheConfig.BOOK_CACHE_NAME));
+    }
+
+    private void sendCreatedEvent(Book book) {
+        Instant now = Instant.now();
+        BookDetailsDto dto = bookMapper.toDetailsDto(book);
+        BookEvent event = BookEventFactory.createBookCreatedEvent(now, dto);
+        eventPublisher.publishEvent(event);
     }
 
 }
