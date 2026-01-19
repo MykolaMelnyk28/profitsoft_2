@@ -24,6 +24,8 @@ spring:
         order_inserts: true
         order_updates: true
     show-sql: true
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
 
 cors:
   allowed:

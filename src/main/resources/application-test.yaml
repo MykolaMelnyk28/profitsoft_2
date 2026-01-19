@@ -16,6 +16,10 @@ spring:
         order_updates: true
     show-sql: true
 
+kafka:
+  topics:
+    books: ${KAFKA_TOPICS_BOOKS:books}
+
 logging:
   level:
     com.melnyk.profitsoft_2: debug

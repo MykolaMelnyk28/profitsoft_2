@@ -7,6 +7,14 @@ spring:
   profiles:
     active:
       - dev
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
+
+kafka:
+  topics:
+    books: ${KAFKA_TOPICS_BOOKS:books}
 
 cors:
   allowed:
