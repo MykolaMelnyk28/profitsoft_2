@@ -6,6 +6,7 @@ networks:
 
 volumes:
   pg-data:
+  kafka_data:
 
 services:
   postgres:
@@ -20,6 +21,34 @@ services:
       - book-api-network
     volumes:
       - pg-data:/var/lib/postgresql/data
+  kafka:
+    image: apache/kafka:4.0.0
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    networks:
+      - book-api-network
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    env_file:
+      - kafka.env
+    healthcheck:
+      test: [ "CMD", "/opt/kafka/bin/kafka-broker-api-versions.sh", "--bootstrap-server", "localhost:9092" ]
+      interval: 5s
+      retries: 12
+  kafdrop:
+    image: obsidiandynamics/kafdrop:4.2.0
+    container_name: kafdrop
+    ports:
+      - "9000:9000"
+    networks:
+      - book-api-network
+    environment:
+      KAFKA_BROKERCONNECT: kafka:9092
+      JVM_OPTS: "-Xms32M -Xmx64M"
+    depends_on:
+      kafka:
+        condition: service_healthy
   book-api-app:
     build:
       context: .
@@ -33,7 +62,8 @@ services:
     env_file:
       - .env
     depends_on:
-      - postgres
+      postgres:
+        condition: service_started
     healthcheck:
       test: [ "CMD-SHELL", "curl -sf http://localhost:8080/actuator/health || exit 1" ]
       interval: 10s

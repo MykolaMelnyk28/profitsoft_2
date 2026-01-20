@@ -103,7 +103,12 @@ Before starting, make sure you have created the following files:
 docker network create book-api-network
 ```
 
-2. Run the command:
+2. Run the Kafka:
+```bash
+docker-compose up -d kafka
+```
+
+3. Run the app:
 ```bash
 docker-compose up -d book-api-app
 ```
